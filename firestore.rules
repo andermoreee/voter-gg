@@ -1,0 +1,61 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function ownsUsername(username) {
+      return signedIn()
+        && get(/databases/$(database)/documents/accounts/$(username)).data.uid == request.auth.uid;
+    }
+
+    match /accounts/{username} {
+      allow read: if true;
+      allow create: if signedIn()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.user == username
+        && username.matches('^[a-z0-9_]{3,20}$');
+      allow update: if ownsUsername(username)
+        && request.resource.data.uid == resource.data.uid
+        && request.resource.data.user == resource.data.user
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['avatar','name']);
+      allow delete: if false;
+    }
+
+    match /polls/{pollId} {
+      allow read: if true;
+      allow create: if signedIn()
+        && ownsUsername(request.resource.data.by)
+        && request.resource.data.q is string
+        && request.resource.data.q.size() > 0
+        && request.resource.data.q.size() <= 160
+        && request.resource.data.opts is list
+        && request.resource.data.opts.size() >= 2
+        && request.resource.data.opts.size() <= 4;
+      allow update, delete: if false;
+    }
+
+    match /votes/{voteId} {
+      allow read: if true;
+      allow create, update: if signedIn()
+        && request.resource.data.u is string
+        && ownsUsername(request.resource.data.u)
+        && request.resource.data.p is string
+        && voteId == request.resource.data.p + '_' + request.resource.data.u
+        && exists(/databases/$(database)/documents/polls/$(request.resource.data.p))
+        && request.resource.data.o is int
+        && request.resource.data.o >= 0
+        && request.resource.data.o < get(/databases/$(database)/documents/polls/$(request.resource.data.p)).data.opts.size();
+      allow delete: if false;
+    }
+
+    match /comments/{commentId} {
+      allow read: if true;
+      allow create: if signedIn()
+        && ownsUsername(request.resource.data.u)
+        && request.resource.data.p is string
+        && exists(/databases/$(database)/documents/polls/$(request.resource.data.p))
+        && request.resource.data.t is string
+        && request.resource.data.t.size() <= 200;
+      allow update, delete: if false;
+    }
+  }
+}
