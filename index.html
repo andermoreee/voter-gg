@@ -1,0 +1,1090 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>voter.gg</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#16183a;--mut:#6b7193;--line:#e7e9f3;--bg:#f5f6fb;--a:#4f7cff;--b:#8b5cff;--c:#ff6fb1;--g:#1fb88a;--r:24px;--e:cubic-bezier(.2,.8,.2,1);--sh:0 1px 2px rgba(22,24,58,.04),0 14px 34px -18px rgba(22,24,58,.22)}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;min-height:100%}
+body{font-family:Nunito,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
+button,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid rgba(79,124,255,.45);outline-offset:2px}
+.mesh{position:fixed;inset:0;z-index:-1;overflow:hidden;background:var(--bg)}
+.mesh i{position:absolute;border-radius:50%;filter:blur(70px);opacity:.6;animation:float 18s ease-in-out infinite alternate}
+.mesh i:nth-child(1){width:46vmax;height:46vmax;background:#bcd3ff;top:-16vmax;left:-10vmax}
+.mesh i:nth-child(2){width:40vmax;height:40vmax;background:#e4d2ff;bottom:-14vmax;right:-8vmax;animation-duration:22s}
+.mesh i:nth-child(3){width:30vmax;height:30vmax;background:#c9f5e6;top:35%;left:50%;animation-duration:26s}
+@keyframes float{to{transform:translate(6vw,4vh) scale(1.08)}}
+@keyframes sh{to{background-position:200% 0}}
+@keyframes enter{from{opacity:0;transform:translateY(16px)}}
+@keyframes swap{from{opacity:.25;transform:translateY(10px)}}
+@keyframes shim{to{background-position:-300% 0}}
+@keyframes bob{50%{transform:translateY(-8px) rotate(6deg)}}
+@keyframes pop{from{opacity:0;transform:scale(.85)}}
+
+.top{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:14px;padding:14px max(18px,env(safe-area-inset-left)) 14px;background:rgba(245,246,251,.8);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(22,24,58,.06)}
+.logo{font-size:28px;font-weight:900;letter-spacing:-.02em;line-height:1}
+.logo span{background:linear-gradient(90deg,var(--a),var(--b),var(--c),var(--a));background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:sh 6s linear infinite}
+.ev-brand{display:flex;flex-direction:column;align-items:flex-start;gap:3px;min-width:0}.ev-credit{display:flex;align-items:center;gap:7px;line-height:1}.ev-honor{font-size:9px;font-weight:900;letter-spacing:.045em;text-transform:uppercase;color:var(--mut);line-height:1;white-space:nowrap}.ev-logo{display:block;width:auto;height:24px;max-width:72px;object-fit:contain;object-position:left center;margin:0;flex:none}
+.grow{flex:1}
+.acct{position:relative}
+.av-btn{border:0;padding:0;background:none;border-radius:50%;cursor:pointer;display:block;transition:transform .3s var(--e)}
+.av-btn:hover{transform:scale(1.07)}
+.av{width:40px;height:40px;border-radius:50%;flex:none;display:grid;place-items:center;overflow:hidden;background:linear-gradient(135deg,#bcd3ff,#e4d2ff);font-weight:900;font-size:15px;box-shadow:0 0 0 2px #fff,0 6px 16px -6px rgba(22,24,58,.35)}
+.av img{width:100%;height:100%;object-fit:cover;display:block}
+.av.sm{width:30px;height:30px;font-size:12px;box-shadow:none}
+.av.xl{width:84px;height:84px;font-size:32px;margin:0 auto 12px}
+.menu{position:absolute;right:0;top:calc(100% + 10px);width:230px;padding:8px;border-radius:18px;background:#fff;border:1px solid var(--line);box-shadow:0 26px 50px -18px rgba(22,24,58,.35);opacity:0;transform:translateY(-6px) scale(.98);transform-origin:top right;pointer-events:none;transition:opacity .25s,transform .35s var(--e)}
+.menu.open{opacity:1;transform:none;pointer-events:auto}
+.menu-head{padding:10px 12px 12px;border-bottom:1px solid var(--line);margin-bottom:6px}
+.menu-head b{display:block;font-size:16px}
+.menu-head span{color:var(--mut);font-size:13px;font-weight:700}
+.mi{display:block;width:100%;text-align:left;border:0;background:none;padding:10px 12px;border-radius:12px;font-weight:800;cursor:pointer;transition:background .2s,transform .25s var(--e)}
+.mi:hover{background:#f1f3fb;transform:translateX(3px)}
+.more-wrap{position:relative;flex:none;margin-left:auto}
+.dots-btn{width:34px;height:34px;border:0;border-radius:50%;background:transparent;color:var(--mut);font-size:23px;font-weight:900;line-height:1;display:grid;place-items:center;cursor:pointer;transition:background .22s,transform .25s var(--e),color .22s}
+.dots-btn:hover,.dots-btn[aria-expanded=true]{background:#f0f2fa;color:var(--ink);transform:scale(1.06)}
+.action-menu{position:absolute;z-index:25;right:0;top:calc(100% + 7px);width:224px;padding:7px;border:1px solid var(--line);border-radius:17px;background:rgba(255,255,255,.97);box-shadow:0 24px 48px -18px rgba(22,24,58,.35);opacity:0;pointer-events:none;transform:translateY(-7px) scale(.97);transform-origin:top right;transition:opacity .2s,transform .28s var(--e)}
+.action-menu.open{opacity:1;pointer-events:auto;transform:none}
+.action-menu button{width:100%;display:flex;align-items:center;gap:9px;text-align:left;padding:9px 11px;border:0;border-radius:11px;background:transparent;font-size:13px;font-weight:900;cursor:pointer;transition:background .2s,transform .2s var(--e)}
+.action-menu button:hover{background:#f1f3fb;transform:translateX(2px)}
+.action-menu button.danger{color:#d34b69}
+.action-menu .menu-label{padding:8px 11px 4px;color:#969bb4;font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+.admin-badge{position:relative;isolation:isolate;overflow:hidden;contain:paint;display:inline-grid;vertical-align:middle;place-items:center;width:16px;height:16px;margin-left:5px;border-radius:50%;background:#b98218;box-shadow:0 1px 4px rgba(176,125,17,.38),inset 0 0 0 1px rgba(255,255,255,.55)}
+.admin-badge::before{content:"";position:absolute;z-index:0;inset:-85%;border-radius:50%;background:conic-gradient(from 0deg,#95600a 0deg,#f4c54f 62deg,#fff0a8 112deg,#d99c20 178deg,#8e5d0b 244deg,#f8db76 305deg,#95600a 360deg);animation:goldSpin 2.8s linear infinite;will-change:transform}
+.admin-badge svg{position:relative;z-index:1;display:block;width:11px;height:11px;filter:drop-shadow(0 1px 1px rgba(91,57,0,.3))}
+.admin-badge path{fill:none;stroke:#fff;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+@keyframes goldSpin{to{transform:rotate(1turn)}}
+.admin-hint{display:inline-flex;align-items:center;gap:6px;color:#9b6a08;font-size:12px;font-weight:900}
+.cmt .more-wrap{position:relative;justify-self:end;align-self:start;width:34px;margin:0;z-index:2}
+.cmt .bub{width:auto;max-width:100%;min-width:0}
+.cmt.menu-active{z-index:100}
+.cm.open,.cm.open>div,.cm.open .cm-in,.cm.open [data-list]{overflow:visible}
+.action-menu{z-index:200;width:min(224px,calc(100vw - 36px));max-height:min(70vh,440px);overflow-y:auto;overscroll-behavior:contain}
+.action-menu button{line-height:1.25;white-space:normal;overflow-wrap:anywhere}
+#actionM .sheet{width:min(460px,100%)}
+#actionM select{width:100%;padding:13px 16px;border:1.5px solid var(--line);border-radius:16px;background:#fff;font:inherit;font-weight:800;color:var(--ink)}
+#actionM .action-note{padding:11px 13px;background:#f7f8fd;border:1px solid var(--line);border-radius:14px;color:var(--mut);font-size:13px;font-weight:700}
+@media (prefers-reduced-motion:reduce){.admin-badge::before{animation:none}}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:999px;padding:12px 22px;font-weight:800;font-size:15px;cursor:pointer;background:var(--ink);color:#fff;transition:transform .2s var(--e),box-shadow .3s,opacity .2s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 12px 26px -12px rgba(22,24,58,.55)}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.btn.grad{background:linear-gradient(120deg,var(--a),var(--b));box-shadow:0 10px 24px -12px var(--b)}
+.btn.grad:hover{box-shadow:0 14px 30px -10px var(--b)}
+.btn.soft{background:#fff;color:var(--ink);border:1px solid var(--line);box-shadow:var(--sh)}
+.btn.sm{padding:8px 16px;font-size:14px}
+
+main{max-width:680px;margin:0 auto;padding:22px 16px 120px}
+.card{background:#fff;border-radius:var(--r);box-shadow:var(--sh);border:1px solid rgba(22,24,58,.05);transition:box-shadow .4s var(--e),transform .4s var(--e)}
+.ask{display:flex;align-items:center;gap:14px;padding:12px 12px 12px 14px;margin-bottom:22px;cursor:pointer}
+.ask:hover{transform:translateY(-2px);box-shadow:0 1px 2px rgba(22,24,58,.04),0 22px 44px -18px rgba(79,124,255,.35)}
+.ask .av{box-shadow:none;background:linear-gradient(135deg,var(--a),var(--b));color:#fff}
+.ask-ph{flex:1;color:var(--mut);font-weight:700;font-size:16px;min-width:0}
+.seg{position:relative;display:flex;gap:4px;padding:5px;margin:0 0 20px;background:rgba(22,24,58,.06);border-radius:999px;width:fit-content;max-width:100%}
+.seg button{position:relative;z-index:1;border:0;background:none;padding:9px 20px;border-radius:999px;font-weight:800;color:var(--mut);cursor:pointer;white-space:nowrap;transition:color .35s var(--e)}
+.seg button:hover{color:var(--ink)}
+.seg button.on{color:var(--ink)}
+.seg .ind{position:absolute;z-index:0;top:5px;bottom:5px;left:0;width:0;border-radius:999px;background:#fff;box-shadow:0 4px 14px -6px rgba(22,24,58,.3);transition:transform .45s var(--e),width .45s var(--e)}
+.swap{animation:swap .45s var(--e)}
+.status{color:#c2416e;font-weight:700;text-align:center;padding:14px}
+.skel{height:200px;border-radius:var(--r);background:linear-gradient(90deg,#fff 25%,#f1f3fb 50%,#fff 75%);background-size:300% 100%;animation:shim 1.4s linear infinite;margin-bottom:18px;box-shadow:var(--sh)}
+.empty{text-align:center;padding:50px 20px;color:var(--mut)}
+.orb{font-size:60px;display:inline-block;animation:bob 3s ease-in-out infinite}
+.empty h3{color:var(--ink);margin:12px 0 4px;font-size:21px;font-weight:900}
+
+.poll{padding:22px;margin-bottom:18px}
+.poll.enter{animation:enter .6s var(--e) both}
+.ph-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.who{min-width:0;flex:1}
+.who b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.who small{color:var(--mut);font-size:13px;font-weight:700}
+.q{margin:0 0 16px;font-size:clamp(20px,4.5vw,25px);line-height:1.22;font-weight:900;letter-spacing:-.01em;overflow-wrap:anywhere}
+.img{display:block;width:100%;max-height:360px;object-fit:cover;border-radius:18px;margin:0 0 14px;background:#eef1fa;animation:pop .5s var(--e)}
+.player{display:flex;align-items:center;gap:12px;padding:8px 14px 8px 8px;margin-bottom:14px;border-radius:999px;background:#f4f6fc}
+.play{flex:none;width:42px;height:42px;border:0;border-radius:50%;cursor:pointer;color:#fff;font-size:14px;background:linear-gradient(135deg,var(--a),var(--b));box-shadow:0 8px 18px -8px var(--b);transition:transform .2s var(--e)}
+.play:hover{transform:scale(1.08)}
+.play:active{transform:scale(.92)}
+.track{position:relative;flex:1;height:6px;border-radius:9px;background:#dfe4f5;cursor:pointer;overflow:hidden}
+.track .fill,.player .fill{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:9px;background:linear-gradient(90deg,var(--a),var(--b));transition:width .3s linear}
+.time{font-size:13px;font-weight:800;color:var(--mut);font-variant-numeric:tabular-nums;min-width:34px;text-align:right}
+audio{display:none}
+.opts{display:grid;gap:10px}
+.opt{position:relative;overflow:hidden;width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;padding:15px 18px;border-radius:16px;border:1.5px solid var(--line);background:#fafbff;font-weight:800;font-size:16px;cursor:pointer;transition:transform .25s var(--e),border-color .3s,background .3s,box-shadow .3s}
+.opt>*:not(.fill){position:relative}
+.opt .fill{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:inherit;background:linear-gradient(90deg,#e3ebff,#ece3ff);transition:width .9s var(--e)}
+.opt:hover{transform:translateY(-2px);border-color:#c5d1f7;box-shadow:0 10px 22px -14px rgba(79,124,255,.6)}
+.opt:active{transform:scale(.98)}
+.t{min-width:0;overflow-wrap:anywhere}
+.rt{display:flex;align-items:center;gap:8px;flex:none}
+.pc{font-variant-numeric:tabular-nums;color:var(--mut);opacity:0;transition:opacity .4s}
+.tick{width:22px;height:22px;border-radius:50%;background:var(--a);color:#fff;font-size:12px;display:grid;place-items:center;transform:scale(0);transition:transform .45s cubic-bezier(.2,1.6,.4,1)}
+.voted .pc{opacity:1}
+.opt.mine{border-color:var(--a);background:#f3f6ff}
+.opt.mine .fill{background:linear-gradient(90deg,#cfdcff,#dccbff)}
+.opt.mine .tick{transform:scale(1)}
+.voted .opt{cursor:default}
+.voted .opt:hover{transform:none;box-shadow:none;border-color:var(--line)}
+.voted .opt.mine:hover{border-color:var(--a)}
+.foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:16px;color:var(--mut);font-size:14px;font-weight:700}
+.chip{display:inline-flex;align-items:center;gap:6px;border:0;background:#f1f3fb;border-radius:999px;padding:7px 14px;cursor:pointer;color:var(--ink);font-weight:800;transition:background .25s,color .25s,transform .2s var(--e)}
+.chip:hover{background:#e6ebfb;transform:translateY(-1px)}
+.chip[aria-expanded=true]{background:var(--ink);color:#fff}
+/* Original voter.gg comments — restored and scaled to fit the poll card */
+.cm{display:grid;grid-template-rows:0fr;transition:grid-template-rows .42s var(--e);width:100%;max-width:100%;min-width:0}
+.cm.open{grid-template-rows:1fr}
+.cm>div{min-height:0;overflow:hidden;width:100%;max-width:100%;min-width:0}
+.cm-in{padding:11px 0 0;border-top:1px solid var(--line);width:100%;max-width:100%;min-width:0}
+.cm-in>[data-list]{display:grid;gap:7px;width:100%;max-width:100%;min-width:0;margin:0 0 8px;overflow:visible}
+.cmt{display:grid;grid-template-columns:28px minmax(0,1fr) 28px;align-items:start;gap:7px;margin:0;width:100%;max-width:100%;min-width:0;position:relative;animation:enter .34s var(--e) both}
+.cmt .av.sm{width:28px;height:28px;font-size:11px;box-shadow:none;margin-top:2px}
+.cmt .bub{display:block;background:#f4f6fc;border:0;border-radius:15px;padding:7px 10px;min-width:0;width:100%;max-width:100%;overflow-wrap:anywhere;font-size:13px;line-height:1.36;transition:background .2s}
+.cmt:hover .bub{background:#eef1fa}
+.cmt .bub b{display:inline;font-size:11px;font-weight:900;color:var(--ink);line-height:1.2;margin-right:5px}
+.comment-text{display:inline;font-size:12px;line-height:1.35;font-weight:700;color:#454b6c;white-space:pre-wrap;overflow-wrap:anywhere;min-width:0}
+.cmt .more-wrap{position:relative;justify-self:end;align-self:start;width:28px;min-width:28px;margin:0;z-index:3}
+.cmt .dots-btn{width:27px;height:27px;font-size:19px;background:transparent;color:#858ba8}
+.cmt .dots-btn:hover,.cmt .dots-btn[aria-expanded=true]{background:#edf0fa;color:var(--ink)}
+.cmt.menu-active{z-index:100}
+.cmt .action-menu{right:0;top:calc(100% + 4px);z-index:220}
+.cm.open,.cm.open>div,.cm.open .cm-in,.cm.open [data-list]{overflow:visible}
+.big-st{display:block;font-size:32px;line-height:1.05;margin-top:3px;animation:pop .4s cubic-bezier(.2,1.6,.4,1) both}
+.none{color:var(--mut);font-size:12px;font-weight:700;margin:3px 0 9px}
+.stks{display:flex;align-items:center;gap:1px;overflow-x:auto;overflow-y:hidden;padding:3px 1px 5px;scrollbar-width:none;width:100%;max-width:100%;min-width:0}
+.stks::-webkit-scrollbar{display:none}
+.stk{flex:none;width:32px;height:32px;border:0;border-radius:9px;background:none;font-size:18px;cursor:pointer;transition:transform .2s var(--e),background .2s}
+.stk:hover{transform:scale(1.12) rotate(-5deg);background:#f1f3fb}
+.stk.on{background:#e4ebff;box-shadow:0 0 0 2px var(--a)}
+.cin{display:flex;gap:7px;align-items:center;width:100%;max-width:100%;min-width:0;margin:0}
+.cin input{flex:1 1 auto;width:1px;min-width:0;height:36px;border-radius:999px;padding:8px 13px;font-size:13px;font-weight:700}
+.cin .btn.sm{flex:none;min-height:34px;padding:7px 13px;font-size:12px}
+@media(max-width:520px){
+  .cm-in{padding-top:9px}
+  .cm-in>[data-list]{gap:6px;margin-bottom:7px}
+  .cmt{grid-template-columns:26px minmax(0,1fr) 26px;gap:6px}
+  .cmt .av.sm{width:26px;height:26px}
+  .cmt .bub{padding:6px 9px;border-radius:13px}
+  .cmt .more-wrap{width:26px;min-width:26px}
+  .cmt .dots-btn{width:25px;height:25px}
+  .stks{gap:0;padding:2px 0 4px}
+  .stk{width:29px;height:29px;font-size:17px}
+  .cin{gap:6px}
+  .cin input{height:34px;padding:7px 11px;font-size:12px}
+  .cin .btn.sm{min-height:32px;padding:6px 11px}
+}
+
+input,textarea{width:100%;padding:13px 16px;border-radius:16px;border:1.5px solid var(--line);background:#fff;transition:border-color .25s,box-shadow .25s}
+input::placeholder,textarea::placeholder{color:#9aa0bd}
+input:focus,textarea:focus{outline:none;border-color:var(--a);box-shadow:0 0 0 4px rgba(79,124,255,.15)}
+textarea{resize:vertical}
+.modal{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:18px;background:rgba(22,24,58,.22);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .3s}
+.modal.open{opacity:1;pointer-events:auto}
+.sheet{position:relative;width:min(440px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:28px;padding:26px;box-shadow:0 40px 90px -30px rgba(22,24,58,.45);transform:translateY(18px) scale(.97);transition:transform .45s var(--e)}
+.modal.open .sheet{transform:none}
+.sheet h2{margin:0 0 16px;font-size:24px;font-weight:900}
+.x{position:absolute;top:14px;right:14px;width:34px;height:34px;border-radius:50%;border:0;background:#f1f3fb;cursor:pointer;font-size:18px;line-height:1;transition:transform .3s var(--e),background .2s}
+.x:hover{transform:rotate(90deg);background:#e6ebfb}
+.stack{display:grid;gap:12px}
+.row{display:flex;gap:10px}
+.row>*{flex:1}
+.err{color:#d83f77;font-size:14px;font-weight:700;min-height:20px}
+.hint{margin:-4px 0 0;color:var(--mut);font-size:13px;font-weight:700}
+.drop{display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;border-radius:16px;border:1.5px dashed #b9c6f2;background:#f7f9ff;font-weight:800;cursor:pointer;transition:background .25s,transform .25s,border-color .25s,color .25s;text-align:center}
+.drop:hover{background:#eef3ff;transform:translateY(-2px);border-color:var(--a)}
+.drop.ok{border-style:solid;border-color:var(--g);background:#ecfbf5;color:#117a58}
+.toast{position:fixed;left:50%;bottom:26px;z-index:70;transform:translate(-50%,180%);background:var(--ink);color:#fff;font-weight:800;padding:12px 20px;border-radius:999px;box-shadow:0 18px 40px -16px rgba(22,24,58,.6);transition:transform .55s cubic-bezier(.2,1.3,.4,1);max-width:92vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.toast.show{transform:translate(-50%,0)}
+@media (max-width:520px){.logo{font-size:24px}.ev-logo{height:22px;max-width:66px}.ev-honor{font-size:8px}.top{gap:10px}.cmt{grid-template-columns:30px minmax(0,1fr) 32px;gap:8px}.cmt .action-menu{right:0}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* voter.gg admin dashboard + direct messages — same rounded, pastel visual language */
+.header-action{position:relative;white-space:nowrap}.tiny-count{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#ff6fb1;color:#fff;font-size:10px;font-weight:900}
+.admin-sheet{width:min(760px,100%);padding:26px;max-height:92vh}.admin-title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding-right:30px}.admin-title-row h2{margin:3px 0 3px}.eyebrow{display:block;color:#8790b3;font-size:10px;letter-spacing:.14em;font-weight:900}.admin-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:18px 0}.admin-stat{display:grid;gap:2px;padding:13px 15px;border:1px solid var(--line);border-radius:17px;background:linear-gradient(135deg,#f8faff,#f7f3ff)}.admin-stat b{font-size:23px;font-weight:900;line-height:1.1}.admin-stat span{font-size:11px;color:var(--mut);font-weight:800}.admin-tabs{display:flex;align-items:center;gap:5px;padding:4px;border-radius:999px;background:#f0f2fa;margin-bottom:12px}.admin-tabs button{flex:1;border:0;border-radius:999px;background:transparent;padding:9px 12px;color:var(--mut);font-weight:900;font-size:13px;cursor:pointer;transition:background .25s,color .25s,transform .25s var(--e)}.admin-tabs button:hover{transform:translateY(-1px)}.admin-tabs button.on{background:#fff;color:var(--ink);box-shadow:0 4px 14px -8px rgba(22,24,58,.3)}.admin-search{margin-bottom:10px}.admin-list{display:grid;gap:8px;max-height:43vh;overflow:auto;padding:1px 3px 3px}.admin-user-row{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 11px;border:1px solid var(--line);border-radius:16px;background:#fff;animation:enter .28s var(--e) both}.admin-user-info{min-width:0}.admin-user-info b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px}.admin-user-info small{display:block;color:var(--mut);font-size:11px;font-weight:800}.admin-user-actions{display:flex;gap:5px;align-items:center;flex-wrap:wrap;justify-content:flex-end}.mini-action{border:1px solid var(--line);border-radius:999px;background:#f8f9fd;padding:6px 9px;font-size:10px;font-weight:900;cursor:pointer;transition:transform .2s var(--e),background .2s}.mini-action:hover{background:#eef2ff;transform:translateY(-1px)}.mini-action.danger{color:#d34b69;background:#fff7f9}.admin-state{min-height:145px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--mut);text-align:center;padding:22px}.state-orb{width:42px;height:42px;display:grid;place-items:center;border-radius:15px;background:linear-gradient(135deg,#e6edff,#f0e4ff);font-size:22px;color:var(--b);animation:bob 3s ease-in-out infinite}.admin-state b{color:var(--ink);font-size:14px}.admin-state small{font-size:12px;font-weight:700}.report-card{padding:14px;border-radius:16px}.report-top{display:flex;gap:8px;align-items:center;justify-content:space-between}.report-top small{color:var(--mut);font-size:11px;font-weight:800}.report-reason{margin:8px 0;color:var(--ink);font-size:13px;font-weight:900}.report-snippet{margin:7px 0;padding:9px 11px;border-radius:12px;background:#f4f6fc;color:#555d7f;font-size:12px;font-weight:700;overflow-wrap:anywhere}.report-card .hint{margin:0 0 10px}.report-card .btn{margin-right:5px;margin-top:4px}.admin-footnote{margin-top:12px;padding:10px 12px;background:#f7f8fd;border-radius:13px;color:var(--mut);font-size:11px;font-weight:700}.banned-tag{display:inline-flex;align-items:center;padding:3px 7px;border-radius:999px;background:#fff0f4;color:#c44568;font-size:9px;font-weight:900;margin-left:5px}
+.dm-sheet{width:min(900px,100%);height:min(760px,90vh);max-height:90vh;padding:0;overflow:hidden}.dm-close{z-index:5}.dm-layout{height:100%;display:grid;grid-template-columns:285px minmax(0,1fr);min-height:0}.dm-sidebar{display:flex;flex-direction:column;min-height:0;padding:23px 14px 13px;border-right:1px solid var(--line);background:linear-gradient(180deg,#fbfcff,#f7f8fd)}.dm-side-head{display:flex;align-items:center;justify-content:space-between;padding:0 32px 10px 4px}.dm-side-head h2{font-size:23px;margin:2px 0 0}.round-plus{width:34px;height:34px;border:0;border-radius:50%;color:white;background:linear-gradient(135deg,var(--a),var(--b));font-size:22px;line-height:1;cursor:pointer;box-shadow:0 8px 18px -10px var(--b);transition:transform .2s var(--e)}.round-plus:hover{transform:rotate(90deg) scale(1.06)}.dm-search{height:38px;padding:8px 12px;border-radius:13px;font-size:12px;margin:0 0 10px}.dm-list{display:grid;align-content:start;gap:5px;overflow:auto;min-height:0}.dm-item{width:100%;display:grid;grid-template-columns:38px minmax(0,1fr);gap:9px;align-items:center;text-align:left;border:0;border-radius:14px;padding:9px;background:transparent;cursor:pointer;transition:background .2s,transform .2s var(--e)}.dm-item:hover,.dm-item.active{background:#edf1ff;transform:translateX(1px)}.dm-item .av{width:36px;height:36px}.dm-item-copy{min-width:0}.dm-item-copy b{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dm-item-copy span{display:block;color:var(--mut);font-size:10px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dm-item-badge{display:inline-flex;align-items:center;margin-left:5px;padding:2px 6px;border-radius:999px;background:#eee8ff;color:#7654d5;font-size:9px;font-weight:900}.dm-safety-note{margin:10px 2px 0;padding:10px;border-radius:12px;background:#f0f3fb;color:var(--mut);font-size:10px;font-weight:800;line-height:1.35}.dm-thread-area{position:relative;display:flex;flex-direction:column;min-width:0;min-height:0;background:#fff}.dm-welcome{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:25px;color:var(--mut)}.dm-welcome-icon{display:grid;place-items:center;width:65px;height:65px;border-radius:23px;background:linear-gradient(135deg,#e7edff,#eee4ff);color:var(--b);font-size:30px;animation:bob 3s ease-in-out infinite}.dm-welcome h3{color:var(--ink);margin:17px 0 4px;font-size:20px}.dm-welcome p{margin:0 0 16px;font-size:13px;font-weight:700}.dm-thread{height:100%;display:flex;flex-direction:column;min-height:0}.dm-thread-head{position:relative;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 54px 13px 18px;border-bottom:1px solid var(--line)}.dm-person{display:flex;align-items:center;gap:10px;min-width:0}.dm-person .av{width:38px;height:38px}.dm-person b{display:block;font-size:14px}.dm-person small{display:block;color:var(--mut);font-size:11px;font-weight:800}.dm-head-menu{position:absolute;right:48px;top:58px;z-index:9;display:none;width:190px;padding:6px;border:1px solid var(--line);border-radius:14px;background:#fff;box-shadow:var(--sh)}.dm-head-menu.open{display:grid;animation:pop .2s var(--e)}.dm-head-menu button{border:0;background:none;text-align:left;padding:9px;border-radius:10px;font-size:12px;font-weight:900;cursor:pointer}.dm-head-menu button:hover{background:#f2f4fb}.dm-head-menu .danger{color:#d34b69}.dm-waiting{margin:8px 14px 0;padding:8px 11px;border-radius:12px;background:#f4f2ff;color:#7357c7;font-size:10px;font-weight:900;text-align:center}.dm-request{margin:10px 14px 0;padding:12px 14px;border:1px solid #dce4ff;border-radius:15px;background:linear-gradient(110deg,#f3f6ff,#faf5ff);display:grid;gap:5px}.dm-request b{font-size:13px}.dm-request span{font-size:11px;color:var(--mut);font-weight:700}.dm-request>div{display:flex;gap:8px;margin-top:4px}.dm-messages{display:flex;flex-direction:column;gap:9px;flex:1;min-height:0;overflow-y:auto;padding:15px 16px 18px;background:radial-gradient(ellipse at 10% 0%,rgba(214,226,255,.24),transparent 55%),#fff}.dm-bubble-row{display:flex;gap:7px;align-items:flex-end;max-width:88%;animation:enter .25s var(--e) both}.dm-bubble-row.mine{align-self:flex-end;flex-direction:row-reverse}.dm-bubble{max-width:100%;padding:9px 12px;border-radius:16px 16px 16px 5px;background:#f1f4fc;color:#303657;font-size:13px;font-weight:700;line-height:1.4;overflow-wrap:anywhere;white-space:pre-wrap}.dm-bubble-row.mine .dm-bubble{border-radius:16px 16px 5px 16px;background:linear-gradient(120deg,#e6edff,#eee6ff)}.dm-bubble small{display:block;color:#858ba8;font-size:9px;font-weight:800;margin-top:4px;text-align:right}.dm-gif-preview{display:block;max-width:min(300px,100%);max-height:230px;border-radius:12px;object-fit:contain;background:#f0f2f8}.dm-tenor-link{display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:13px;background:#fff;border:1px solid var(--line);color:var(--ink);text-decoration:none;font-weight:900;font-size:12px}.dm-tenor-link span:first-child{font-size:25px}.dm-tenor-link small{display:block;color:var(--mut);font-size:9px}.dm-msg-actions{display:flex;gap:4px;opacity:.6}.dm-msg-actions button{border:0;background:transparent;color:var(--mut);font-size:10px;cursor:pointer;padding:4px}.dm-composer{padding:10px 13px 12px;border-top:1px solid var(--line);background:#fcfcff}.dm-tools{display:flex;align-items:center;gap:7px;margin-bottom:7px}.dm-tool{display:inline-grid;place-items:center;min-width:31px;height:28px;padding:0 8px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--mut);font-size:14px;font-weight:900;cursor:pointer;transition:transform .2s var(--e),background .2s}.dm-tool:hover{background:#eef2ff;transform:translateY(-1px)}.dm-tool#dmGifBtn{font-size:10px;color:#7954d8;letter-spacing:.05em}.dm-send-row{display:flex;align-items:center;gap:7px}.dm-send-row input{height:39px;min-width:0;flex:1;padding:8px 13px;border-radius:999px;font-size:12px}.dm-send-row .btn{height:36px;padding:7px 15px;font-size:12px}.dm-limits{display:block;margin:6px 2px 0;color:#9298b5;font-size:9px;font-weight:700}.dm-blocked-note{margin:12px;padding:12px;border-radius:13px;background:#fff0f4;color:#bb4264;font-size:12px;font-weight:900;text-align:center}.compact-sheet{width:min(430px,100%)}#actionM{z-index:95}#newDmM{z-index:85}#tenorM{z-index:90}.tenor-credit{color:#8b91ac;font-size:10px;font-weight:800;text-align:center;margin:12px 0 0}.tenor-credit a{color:inherit}
+@media(max-width:650px){.admin-sheet{padding:21px 16px}.admin-title-row{padding-right:27px;flex-direction:column}.admin-title-row>.btn{align-self:flex-start}.admin-stats{gap:6px}.admin-stat{padding:10px}.admin-stat b{font-size:19px}.admin-stat span{font-size:10px}.admin-user-row{grid-template-columns:34px minmax(0,1fr)}.admin-user-actions{grid-column:2;justify-content:flex-start}.admin-list{max-height:48vh}.dm-sheet{height:92vh;max-height:92vh}.dm-layout{grid-template-columns:110px minmax(0,1fr)}.dm-sidebar{padding:18px 7px 9px}.dm-side-head{padding:0 22px 9px 3px}.dm-side-head h2{font-size:17px}.dm-side-head .eyebrow{font-size:8px}.dm-search{font-size:10px;padding:7px}.dm-item{grid-template-columns:1fr;justify-items:center;text-align:center;gap:3px;padding:8px 3px}.dm-item-copy{max-width:100%}.dm-item-copy b{font-size:10px}.dm-item-copy span{font-size:9px}.dm-item .av{width:32px;height:32px}.dm-safety-note{font-size:8px;padding:7px}.dm-thread-head{padding:13px 47px 11px 10px}.dm-person .av{width:32px;height:32px}.dm-messages{padding:11px 9px}.dm-bubble-row{max-width:96%}.dm-composer{padding:8px}.dm-limits{font-size:8px}.dm-request{margin:8px;padding:9px}.dm-request>div .btn{padding:7px 11px}.header-action{padding:8px 11px;font-size:11px}}
+@media(max-width:390px){.dm-layout{grid-template-columns:88px minmax(0,1fr)}.dm-sidebar{padding-left:5px;padding-right:5px}.dm-side-head{padding-right:20px}.round-plus{width:28px;height:28px}.dm-side-head h2{font-size:15px}.dm-item-copy span{display:none}.dm-composer .dm-send-row input{font-size:11px}.dm-send-row .btn{padding:7px 10px}}
+@media(prefers-reduced-motion:reduce){.state-orb,.dm-welcome-icon{animation:none}}
+
+
+/* Account moderation screens — match voter.gg cards, gradients and motion */
+.account-screen{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;overflow-y:auto;padding:24px 16px;background:rgba(245,246,251,.92);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);animation:screenFade .35s ease both}
+.account-screen[hidden]{display:none!important}
+.account-screen::before,.account-screen::after{content:"";position:fixed;z-index:-1;width:min(56vw,560px);aspect-ratio:1;border-radius:50%;filter:blur(55px);opacity:.58;pointer-events:none;animation:screenDrift 10s ease-in-out infinite alternate}
+.account-screen::before{top:-18%;left:-12%;background:radial-gradient(circle,#c6d8ff 0%,#c6d8ff00 70%)}
+.account-screen::after{right:-14%;bottom:-22%;background:radial-gradient(circle,#e7d4ff 0%,#e7d4ff00 70%);animation-delay:-4s}
+.account-screen-card{width:min(470px,100%);position:relative;overflow:hidden;padding:clamp(26px,6vw,42px);border-radius:30px;border:1px solid rgba(22,24,58,.07);background:rgba(255,255,255,.94);box-shadow:0 30px 90px -38px rgba(45,55,120,.36);text-align:center;animation:screenCardIn .55s cubic-bezier(.2,.8,.2,1) both}
+.account-screen-card::before{content:"";position:absolute;inset:0 0 auto;height:5px;background:linear-gradient(90deg,var(--a),var(--b),var(--c),var(--a));background-size:220% 100%;animation:sh 5s linear infinite}
+.account-screen-brand{display:flex;align-items:center;justify-content:center;gap:9px;margin-bottom:26px}
+.account-screen-brand .logo{font-size:25px}
+.account-screen-brand .ev-logo{width:68px;height:auto;max-height:23px;object-fit:contain}
+.account-screen-icon{width:94px;height:94px;display:grid;place-items:center;margin:0 auto 22px;border-radius:29px;background:linear-gradient(135deg,#edf2ff,#f2eaff);box-shadow:inset 0 0 0 1px rgba(98,120,210,.08);position:relative;animation:screenIconFloat 3.8s ease-in-out infinite}
+.account-screen-icon::before{content:"";position:absolute;inset:-8px;border:1.5px solid rgba(112,126,227,.20);border-radius:35px;animation:screenRing 2.8s ease-out infinite}
+.account-screen-icon svg{width:45px;height:45px;fill:none;stroke:#7185ed;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.account-screen.is-banned .account-screen-icon{background:linear-gradient(135deg,#fff0f4,#f2eaff)}
+.account-screen.is-banned .account-screen-icon svg{stroke:#d96e91}
+.account-screen.is-kicked .account-screen-icon{background:linear-gradient(135deg,#edf2ff,#f1e8ff)}
+.account-screen-title{margin:0 0 9px;font-size:clamp(24px,5vw,30px);line-height:1.12;letter-spacing:-.035em;font-weight:1000;color:var(--ink)}
+.account-screen-copy{margin:0 auto;max-width:350px;color:var(--mut);font-size:14px;line-height:1.65;font-weight:700}
+.account-screen-detail{margin:20px 0 22px;padding:13px 15px;border:1px solid var(--line);border-radius:17px;background:#f8f9fe;text-align:left}
+.account-screen-detail:empty{display:none}
+.account-screen-detail b{display:block;margin-bottom:4px;color:var(--ink);font-size:11px;text-transform:uppercase;letter-spacing:.07em}
+.account-screen-detail span{display:block;color:#606789;font-size:13px;font-weight:750;overflow-wrap:anywhere}
+.account-screen-meta{margin:10px 0 22px;color:#858aa6;font-size:11px;font-weight:800}
+.account-screen-actions{display:grid;gap:10px}
+.account-screen-actions .btn{width:100%;min-height:46px}
+.account-screen-foot{margin:17px 0 0;color:#9095ad;font-size:11px;font-weight:750}
+@keyframes screenFade{from{opacity:0}to{opacity:1}}
+@keyframes screenCardIn{from{opacity:0;transform:translateY(18px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes screenIconFloat{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-7px) rotate(2deg)}}
+@keyframes screenRing{0%{transform:scale(.88);opacity:.72}100%{transform:scale(1.18);opacity:0}}
+@keyframes screenDrift{to{transform:translate(5vw,4vh) scale(1.08)}}
+@media(max-width:480px){.account-screen{padding:14px}.account-screen-card{padding:27px 21px;border-radius:25px}.account-screen-icon{width:82px;height:82px;border-radius:25px}.account-screen-icon::before{border-radius:31px}.account-screen-brand{margin-bottom:22px}}
+@media(prefers-reduced-motion:reduce){.account-screen,.account-screen-card,.account-screen-icon,.account-screen-icon::before,.account-screen::before,.account-screen::after,.account-screen-card::before{animation:none!important;transition:none!important}}
+
+</style>
+</head>
+<body>
+<div class="mesh" aria-hidden="true"><i></i><i></i><i></i></div>
+
+<header class="top">
+  <div class="ev-brand">
+    <div class="logo">voter<span>.gg</span></div>
+    <div class="ev-credit">
+      <span class="ev-honor">In honor of</span>
+      <img class="ev-logo" src="./everybody-votes-logo.png" alt="Everybody Votes Channel" onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<span style=&quot;color:#b42318;font-size:10px&quot;>Logo file missing — upload everybody-votes-logo.png beside index.html</span>')" />
+    </div>
+  </div>
+  <div class="grow"></div>
+  <button class="btn soft sm header-action" id="messagesBtn" hidden>✉ Messages <span id="dmUnread" class="tiny-count" hidden>0</span></button>
+  <button class="btn sm" id="loginBtn">Log in</button>
+  <div class="acct" id="acct" hidden>
+    <button class="av-btn" id="avBtn" aria-label="Account menu" aria-haspopup="true"><span class="av" id="avIn"></span></button>
+    <div class="menu" id="menu" role="menu">
+      <div class="menu-head"><b id="mName"></b><span id="mUser"></span></div>
+      <label class="mi">📷 Change picture<input type="file" id="pPic" accept="image/*" hidden></label>
+      <button class="mi" id="adminPanelBtn" hidden>✦ Admin dashboard</button>
+      <button class="mi" id="reportsBtn" hidden>⚑ Reports inbox</button>
+      <button class="mi" id="logout">Log out</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="ask card" id="ask" role="button" tabindex="0">
+    <span class="av" id="askAv">✦</span>
+    <span class="ask-ph">What should everybody vote on?</span>
+    <span class="btn grad sm">Ask</span>
+  </div>
+
+  <nav class="seg" id="tabs" aria-label="Sort polls"><i class="ind"></i><button class="on" data-v="hot">Trending</button><button data-v="new">Newest</button></nav>
+
+  <p class="status" id="status" hidden></p>
+  <div id="skel" hidden><div class="skel"></div><div class="skel"></div></div>
+  <section id="feed"></section>
+  <div class="empty" id="empty" hidden><span class="orb">🗳️</span><h3>No polls yet</h3><p>Be the first to ask everybody something.</p></div>
+</main>
+
+<div class="modal" id="authM"><div class="sheet">
+  <button class="x" data-close aria-label="Close">×</button>
+  <h2 id="aTitle">Welcome back</h2>
+  <div class="seg" id="amode"><i class="ind"></i><button data-v="in" class="on">Log in</button><button data-v="up">Sign up</button></div>
+  <div class="stack">
+    <input id="aUser" placeholder="Username" maxlength="20" autocomplete="username" autocapitalize="none">
+    <input id="aName" placeholder="Display name" maxlength="24" hidden>
+    <input id="aPass" type="password" placeholder="Password (6+ characters)" autocomplete="current-password">
+    <label class="drop" id="aPicL" hidden><input type="file" id="aPic" accept="image/*" hidden><span id="aPicT">📷 Add a profile picture (optional)</span></label>
+    <div class="err" id="aErr"></div>
+    <button class="btn grad" id="aGo">Log in</button>
+  </div>
+</div></div>
+
+<div class="modal" id="newM"><div class="sheet">
+  <button class="x" data-close aria-label="Close">×</button>
+  <h2>Ask everybody</h2>
+  <div class="stack">
+    <textarea id="nQ" rows="2" maxlength="160" dir="auto" placeholder="What should the world vote on?"></textarea>
+    <div class="stack" id="nOpts"></div>
+    <button class="btn soft sm" id="nAdd" style="justify-self:start">+ Add option</button>
+    <div class="row">
+      <label class="drop" id="nImgL"><input type="file" id="nImg" accept="image/*" hidden><span>🖼️ Picture</span></label>
+      <label class="drop" id="nAudL"><input type="file" id="nAud" accept="audio/*" hidden><span>🎵 Audio clip</span></label>
+    </div>
+    <p class="hint">Audio clips must be under 90 KB, about 10 seconds.</p>
+    <div class="err" id="nErr"></div>
+    <button class="btn grad" id="nGo" disabled>Post poll</button>
+  </div>
+</div></div>
+
+<div class="modal" id="actionM"><div class="sheet">
+  <button class="x" data-close aria-label="Close">×</button>
+  <h2 id="actionTitle">Moderation</h2>
+  <div class="stack">
+    <p class="action-note" id="actionDesc"></p>
+    <input id="actionUsername" maxlength="20" placeholder="Username (for example: ander)" hidden>
+    <textarea id="actionReason" rows="3" maxlength="300" placeholder="Add a reason…" hidden></textarea>
+    <select id="actionDuration" hidden>
+      <option value="86400000">24 hours</option>
+      <option value="604800000">7 days</option>
+      <option value="2592000000">30 days</option>
+      <option value="0">Permanent</option>
+    </select>
+    <div class="err" id="actionErr"></div>
+    <button class="btn grad" id="actionGo">Continue</button>
+  </div>
+</div></div>
+<div class="modal" id="reportsM"><div class="sheet">
+  <button class="x" data-close aria-label="Close">×</button>
+  <h2>Reports inbox</h2>
+  <p class="hint">Reports submitted by voter.gg users. Review them and dismiss handled reports.</p>
+  <div id="reportsList" class="stack"><p class="none">Loading reports…</p></div>
+</div></div>
+
+<div class="modal" id="adminPanelM"><div class="sheet admin-sheet">
+  <button class="x" data-close aria-label="Close">×</button>
+  <div class="admin-title-row"><div><span class="eyebrow">VOTER.GG CONTROL CENTER</span><h2>Admin dashboard <span class="admin-badge" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.2 8.2 6.4 11.2 12.8 4.8"></path></svg></span></h2><p class="hint">Manage accounts, bans, reports and admin access.</p></div><button class="btn grad sm" id="adminAddBtn">＋ Add admin</button></div>
+  <div class="admin-stats" id="adminStats"><div class="admin-stat"><b>—</b><span>Members</span></div><div class="admin-stat"><b>—</b><span>Active bans</span></div><div class="admin-stat"><b>—</b><span>Admins</span></div></div>
+  <div class="admin-tabs"><button class="on" data-admin-tab="users">Members</button><button data-admin-tab="bans">Bans</button><button id="adminReportsBtn">Reports inbox ↗</button></div>
+  <input id="adminSearch" class="admin-search" placeholder="Search username or display name…" autocomplete="off">
+  <div id="adminList" class="admin-list"><div class="admin-state"><span class="state-orb">✦</span><b>Loading accounts…</b><small>Getting the latest voter.gg data</small></div></div>
+  <div class="admin-footnote">Admin actions are checked again by Firebase. A menu button alone never grants admin access.</div>
+</div></div>
+
+<div class="modal" id="dmM"><div class="sheet dm-sheet">
+  <button class="x dm-close" data-close aria-label="Close">×</button>
+  <div class="dm-layout">
+    <aside class="dm-sidebar">
+      <div class="dm-side-head"><div><span class="eyebrow">YOUR INBOX</span><h2>Messages</h2></div><button class="round-plus" id="newDmBtn" aria-label="New message">＋</button></div>
+      <input id="dmSearch" class="dm-search" placeholder="Search conversations…" autocomplete="off">
+      <div id="dmList" class="dm-list"><div class="admin-state"><span class="state-orb">✉</span><b>Loading inbox…</b><small>Your conversations will appear here</small></div></div>
+      <p class="dm-safety-note">Requests from new people need your approval. You can report or block anyone.</p>
+    </aside>
+    <section class="dm-thread-area">
+      <div id="dmWelcome" class="dm-welcome"><span class="dm-welcome-icon">✉</span><h3>Your messages</h3><p>Choose a conversation or start a new one.</p><button class="btn grad sm" id="dmStartFirst">New message</button></div>
+      <div id="dmThread" class="dm-thread" hidden>
+        <div class="dm-thread-head"><div class="dm-person"><span class="av" id="dmPeerAvatar"></span><div><b id="dmPeerName">Conversation</b><small id="dmPeerHandle"></small></div></div><button class="dots-btn" id="dmMoreBtn" aria-label="Conversation options">⋯</button>
+          <div class="dm-head-menu" id="dmHeadMenu"><button id="dmReportConversation">⚑ Report conversation</button><button id="dmBlockUser" class="danger">⊘ Block user</button></div>
+        </div>
+        <div id="dmRequest" class="dm-request" hidden><b>Message request</b><span>This person wants to chat with you. Accept to reply, or decline the request.</span><div><button class="btn grad sm" id="dmAccept">Accept</button><button class="btn soft sm" id="dmDecline">Decline</button></div></div>
+        <div id="dmWaiting" class="dm-waiting" hidden>Request sent · Waiting for them to accept</div>
+        <div id="dmMessages" class="dm-messages"><div class="admin-state"><span class="state-orb">✦</span><b>Opening conversation…</b></div></div>
+        <div id="dmComposer" class="dm-composer" hidden>
+          <div class="dm-tools"><button class="dm-tool" id="dmGifBtn" title="Share a Tenor GIF">GIF</button><span class="dm-limits">Text and Tenor GIFs only · Keep messages respectful.</span></div>
+          <div class="dm-send-row"><input id="dmText" maxlength="1200" placeholder="Write a message…" autocomplete="off"><button class="btn grad sm" id="dmSend">Send</button></div>
+          
+        </div>
+        <div id="dmBlockedNote" class="dm-blocked-note" hidden>This conversation is unavailable because one of you blocked the other.</div>
+      </div>
+    </section>
+  </div>
+</div></div>
+
+<div class="modal" id="newDmM"><div class="sheet compact-sheet">
+  <button class="x" data-close aria-label="Close">×</button><h2>New message</h2>
+  <p class="hint">Enter the username of someone on voter.gg. They’ll receive a message request.</p>
+  <div class="stack"><input id="newDmUser" maxlength="20" placeholder="Username (without @)" autocomplete="off"><div class="err" id="newDmErr"></div><button class="btn grad" id="newDmGo">Continue</button></div>
+</div></div>
+
+<div class="modal" id="tenorM"><div class="sheet compact-sheet">
+  <button class="x" data-close aria-label="Close">×</button><h2>Share a Tenor GIF</h2>
+  <p class="hint">Open Tenor, choose a GIF, copy its share link, then paste it here. Tenor GIFs are shown with a “Via Tenor” link.</p>
+  <div class="stack"><input id="tenorSearch" maxlength="80" placeholder="Search words (e.g. happy dance)"><button class="btn soft" id="tenorOpen">Open Tenor search ↗</button><input id="tenorUrl" placeholder="Paste a Tenor GIF link…" inputmode="url"><div class="err" id="tenorErr"></div><button class="btn grad" id="tenorSend">Send GIF</button></div>
+  <p class="tenor-credit">Powered by Tenor · GIF content opens on Tenor</p>
+</div></div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<section class="account-screen" id="accountScreen" hidden aria-live="assertive" aria-modal="true" role="dialog" aria-labelledby="accountScreenTitle">
+  <div class="account-screen-card">
+    <div class="account-screen-brand">
+      <div class="logo">voter<span>.gg</span></div>
+      <img class="ev-logo" src="./everybody-votes-logo.png" alt="Everybody Votes Channel" onerror="this.style.display='none'">
+    </div>
+    <div class="account-screen-icon" id="accountScreenIcon" aria-hidden="true">
+      <svg viewBox="0 0 48 48"><path d="M24 5 39 11v11c0 10-6.5 17-15 21C15.5 39 9 32 9 22V11L24 5Z"/><path d="M18 24h12M24 18v12"/></svg>
+    </div>
+    <h1 class="account-screen-title" id="accountScreenTitle">Account notice</h1>
+    <p class="account-screen-copy" id="accountScreenCopy"></p>
+    <div class="account-screen-detail" id="accountScreenDetail" hidden><b id="accountScreenDetailLabel"></b><span id="accountScreenDetailValue"></span></div>
+    <p class="account-screen-meta" id="accountScreenMeta"></p>
+    <div class="account-screen-actions">
+      <button class="btn grad" id="accountScreenPrimary" type="button">Continue</button>
+    </div>
+    <p class="account-screen-foot" id="accountScreenFoot">voter.gg · In honor of Everybody Votes Channel</p>
+  </div>
+</section>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-functions-compat.js"></script>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const okImg=u=>typeof u==='string'&&(/^data:image\/(png|jpeg|webp|gif);base64,[A-Za-z0-9+/=]+$/.test(u)||/^https:\/\/api\.dicebear\.com\/9\.x\/notionists\/svg\?seed=[A-Za-z0-9_%.-]+&backgroundColor=[a-z0-9,]+$/.test(u))?u:'';
+const defaultAvatar=u=>'https://api.dicebear.com/9.x/notionists/svg?seed='+encodeURIComponent(u||'voter')+'&backgroundColor=b6e3f4,c0aede,d1d4f9';
+const okAud=u=>typeof u==='string'&&/^data:audio\/[\w.+-]+;base64,[A-Za-z0-9+/=]+$/.test(u)?u:'';
+const rnd=()=>[...crypto.getRandomValues(new Uint8Array(16))].map(b=>b.toString(16).padStart(2,'0')).join('');
+const ST=['🔥','👑','💀','🤡','🎉','😭','🫠','👀','💯','🐸','🦄','🛸','⚡','🍕','🎮','🤖','🌈','🧠','💅','🥶','🫶','👽','🚀','🏆'];
+const S={db:null,auth:null,functions:null,me:null,isAdmin:false,admins:{},bans:{},adminUnsub:null,banUnsub:null,polls:[],votes:{},comments:{},accounts:{},tab:'hot',cards:new Map(),loaded:false,booted:false,mode:'in',pic:'',nImg:'',nAud:'',moderationUnsubs:[],banExpiryTimer:null,kickHandling:false,accountScreen:null,pendingAction:null,chats:{},chatUnsub:null,chatWatch:null,currentChat:null,dmPeer:null,dmBlocked:false,dmMessages:[],dmUnread:0,adminTab:'users'};
+const enc=new TextEncoder();
+const LS={get(){try{return localStorage.getItem('ev_user')||''}catch{return ''}},set(v){try{v?localStorage.setItem('ev_user',v):localStorage.removeItem('ev_user')}catch{}}};
+const open=id=>$(id).classList.add('open');
+const closeM=el=>el.classList.remove('open');
+const status=t=>{const el=$('#status');el.textContent=t;el.hidden=!t};
+let tt;const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2600)};
+const EXIT_SCREEN_KEY='voter_gg_exit_screen';
+function readExitScreen(){try{return JSON.parse(sessionStorage.getItem(EXIT_SCREEN_KEY)||'null')}catch{return null}}
+function storeExitScreen(data){try{sessionStorage.setItem(EXIT_SCREEN_KEY,JSON.stringify(data))}catch{}}
+function clearStoredExitScreen(){try{sessionStorage.removeItem(EXIT_SCREEN_KEY)}catch{}}
+function showAccountScreen(kind,data={}){
+  const el=$('#accountScreen');if(!el)return;
+  S.accountScreen={kind,data};el.classList.toggle('is-banned',kind==='banned');el.classList.toggle('is-kicked',kind==='kicked');
+  const icon=$('#accountScreenIcon');
+  if(kind==='banned'){
+    icon.innerHTML='<svg viewBox="0 0 48 48"><path d="M24 5 39 11v11c0 10-6.5 17-15 21C15.5 39 9 32 9 22V11L24 5Z"/><path d="M18 18l12 12M30 18 18 30"/></svg>';
+    $('#accountScreenTitle').textContent='You are banned from voter.gg';
+    $('#accountScreenCopy').textContent=Number(data.expiresAt||0)?'This account is temporarily unable to use voter.gg. The rest of the site will become available when the ban expires or a moderator removes it.':'This account has been permanently banned from voter.gg. A moderator must remove the ban before access is restored.';
+    const reason=String(data.reason||'').trim();
+    $('#accountScreenDetail').hidden=!reason;
+    $('#accountScreenDetailLabel').textContent='Reason';$('#accountScreenDetailValue').textContent=reason;
+    const expires=Number(data.expiresAt||0);
+    $('#accountScreenMeta').textContent=expires?('Ban expires '+new Date(expires).toLocaleString()):'This ban has no automatic expiry.';
+    $('#accountScreenPrimary').textContent='Check ban status';
+    $('#accountScreenFoot').textContent='You can return when your ban has been lifted.';
+  }else{
+    icon.innerHTML='<svg viewBox="0 0 48 48"><path d="M8 24h22M22 15l9 9-9 9"/><path d="M27 8h8a5 5 0 0 1 5 5v22a5 5 0 0 1-5 5h-8"/></svg>';
+    $('#accountScreenTitle').textContent='You were kicked from your account';
+    $('#accountScreenCopy').textContent='A moderator ended your current voter.gg session. Your account has not been deleted, and you can log back in whenever you are ready.';
+    $('#accountScreenDetail').hidden=true;
+    $('#accountScreenMeta').textContent=data.at?'Session ended '+new Date(data.at).toLocaleString():'';
+    $('#accountScreenPrimary').textContent='Log back in';
+    $('#accountScreenFoot').textContent='Your account is still here. Sign in again to continue.';
+  }
+  el.hidden=false;document.body.style.overflow='hidden';
+}
+function hideAccountScreen({clearExit=false}={}){
+  const el=$('#accountScreen');if(el)el.hidden=true;document.body.style.overflow='';
+  if(S.banExpiryTimer){clearTimeout(S.banExpiryTimer);S.banExpiryTimer=null}
+  S.accountScreen=null;
+  if(clearExit)clearStoredExitScreen();
+}
+function scheduleBanExpiry(data){
+  if(S.banExpiryTimer){clearTimeout(S.banExpiryTimer);S.banExpiryTimer=null}
+  const expires=Number(data.expiresAt||0);if(!expires)return;
+  const delay=Math.max(0,expires-Date.now()+80);
+  S.banExpiryTimer=setTimeout(()=>{
+    if(S.accountScreen?.kind!=='banned')return;
+    if(Number(S.accountScreen.data.expiresAt||0)<=Date.now())hideAccountScreen();
+    else scheduleBanExpiry(S.accountScreen.data);
+  },Math.min(delay,2147480000));
+}
+
+const ago=t=>{const s=(Date.now()-t)/1000;return s<60?'just now':s<3600?Math.floor(s/60)+'m ago':s<86400?Math.floor(s/3600)+'h ago':Math.floor(s/86400)+'d ago'};
+const total=id=>Object.keys(S.votes[id]||{}).length;
+const dur=s=>isFinite(s)?Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0'):'0:00';
+async function hashPw(p,salt){const k=await crypto.subtle.importKey('raw',enc.encode(p),'PBKDF2',false,['deriveBits']);const b=await crypto.subtle.deriveBits({name:'PBKDF2',salt:enc.encode(salt),iterations:120000,hash:'SHA-256'},k,256);return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+function toData(file,max,q){return new Promise((res,rej)=>{const url=URL.createObjectURL(file),im=new Image();im.onload=()=>{const s=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(im.width*s));c.height=Math.max(1,Math.round(im.height*s));const x=c.getContext('2d');x.fillStyle='#e9edf9';x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(url);res(c.toDataURL('image/jpeg',q))};im.onerror=()=>{URL.revokeObjectURL(url);rej(new Error('Could not read that image'))};im.src=url})}
+const readData=file=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>rej(new Error('Could not read that file'));r.readAsDataURL(file)});
+function avatar(u){const a=S.accounts[u]||{},img=okImg(a.avatar)||defaultAvatar(u);return `<img src="${esc(img)}" alt="" loading="lazy" referrerpolicy="no-referrer">`}
+function isAdminUser(username){return (S.accounts[username]||{}).isAdmin===true}
+function adminBadge(){return '<span class="admin-badge" title="Verified admin" aria-label="Verified admin"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.2 8.2 6.4 11.2 12.8 4.8"></path></svg></span>'}
+function setAv(el,u){const h=avatar(u);if(el.avk!==h){el.avk=h;el.innerHTML=h}}
+
+// segmented control with a sliding indicator
+function seg(root,fn){
+  const ind=root.querySelector('.ind'),btns=[...root.querySelectorAll('button')];
+  const place=()=>{const on=root.querySelector('button.on')||btns[0];ind.style.width=on.offsetWidth+'px';ind.style.transform='translateX('+on.offsetLeft+'px)'};
+  root.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.classList.contains('on'))return;btns.forEach(x=>x.classList.toggle('on',x===b));place();fn&&fn(b.dataset.v)});
+  addEventListener('resize',place);
+  return place;
+}
+const placeTabs=seg($('#tabs'),v=>{S.tab=v;const f=$('#feed');f.classList.remove('swap');void f.offsetWidth;f.classList.add('swap');renderFeed()});
+const placeMode=seg($('#amode'),setMode);
+document.fonts&&document.fonts.ready.then(()=>{placeTabs();placeMode()});
+placeTabs();placeMode();
+
+// ---- account ----
+function renderMe(){
+  const a=(S.me&&S.accounts[S.me.user])||{};
+  $('#loginBtn').hidden=!!S.me;
+  $('#messagesBtn').hidden=!S.me;
+  $('#acct').hidden=!S.me;
+  if(S.me)setAv($('#askAv'),S.me.user);else{$('#askAv').innerHTML='✦';$('#askAv').avk=''}
+  if(S.me){setAv($('#avIn'),S.me.user);$('#mName').textContent=a.name||S.me.user;$('#mUser').textContent='@'+S.me.user}
+  else $('#menu').classList.remove('open');
+  $('#reportsBtn').hidden=!S.isAdmin;
+  $('#adminPanelBtn').hidden=!S.isAdmin;
+}
+function clearModerationWatch(){S.moderationUnsubs.forEach(fn=>{try{fn()}catch{}});S.moderationUnsubs=[]}
+function stopAdminWatch(){
+  if(S.adminUnsub){S.adminUnsub();S.adminUnsub=null}
+  if(S.banUnsub){S.banUnsub();S.banUnsub=null}
+  if(reportsUnsub){reportsUnsub();reportsUnsub=null}
+  S.admins={};S.bans={};S.isAdmin=false;$('#reportsBtn').hidden=true;$('#adminPanelBtn').hidden=true;
+}
+function watchAdmins(){
+  stopAdminWatch();if(!S.db||!S.me||!S.me.uid)return;
+  const uid=S.me.uid;
+  // Read only this account's protected role document; no collection-wide admin query.
+  S.adminUnsub=S.db.doc('admins/'+uid).onSnapshot(doc=>{
+    const data=doc.exists?doc.data():null;
+    S.isAdmin=!!(data&&data.uid===uid&&data.role==='admin');
+    if(S.isAdmin){
+      S.admins[uid]=data;
+      // Backfill this account's public badge marker after a valid admin document is verified.
+      if((S.accounts[S.me.user]||{}).isAdmin!==true){
+        S.db.doc('accounts/'+S.me.user).update({isAdmin:true}).catch(()=>{});
+      }
+    }else delete S.admins[uid];
+    if(S.isAdmin&&!S.banUnsub){S.banUnsub=S.db.collection('bans').onSnapshot(bs=>{S.bans={};bs.docs.forEach(d=>{S.bans[d.id]=d.data()});S.polls.forEach(p=>paintCard(p.id));if($('#adminPanelM')?.classList.contains('open'))renderAdminPanel();},e=>status('Could not load ban list: '+e.message));}
+    if(!S.isAdmin&&S.banUnsub){S.banUnsub();S.banUnsub=null;S.bans={}}
+    if(S.me&&S.me.user==='ander'&&!S.isAdmin)status('Signed in as @ander, but no valid admin record exists at admins/<your Firebase Auth UID>. The document ID must be your exact UID, with uid and role = admin fields.');
+    else status('');
+    renderMe();S.polls.forEach(p=>paintCard(p.id));
+  },e=>status('Admin check blocked by Firestore Rules. Publish the updated firestore.rules file, then refresh. Details: '+e.message));
+}
+function watchModeration(user,username){
+  clearModerationWatch();if(!S.db||!user)return;
+  S.kickHandling=false;
+  const banRef=S.db.doc('bans/'+user.uid),kickRef=S.db.doc('kicks/'+user.uid);
+  S.moderationUnsubs.push(banRef.onSnapshot(doc=>{
+    if(!doc.exists){if(S.accountScreen?.kind==='banned')hideAccountScreen();return}
+    const b=doc.data()||{},expires=Number(b.expiresAt||0);
+    if(!expires||expires>Date.now()){
+      showAccountScreen('banned',b);scheduleBanExpiry(b);
+    }else if(S.accountScreen?.kind==='banned')hideAccountScreen();
+  },e=>status('Could not check account status: '+e.message)));
+  S.moderationUnsubs.push(kickRef.onSnapshot(async doc=>{
+    if(!doc.exists||S.kickHandling)return;
+    S.kickHandling=true;const kick=doc.data()||{};kick.at=kick.at||Date.now();
+    storeExitScreen(kick);showAccountScreen('kicked',kick);
+    try{
+      // The rules allow the signed-in user to clear their own one-time kick notice.
+      await kickRef.delete();
+      await S.auth.signOut();
+    }catch(e){
+      // Keep the kick screen visible. The primary action will retry clearing the notice.
+      $('#accountScreenCopy').textContent='A moderator ended your current voter.gg session. Your account is still here. Select Log back in to finish signing out and return to the login screen.';
+      $('#accountScreenMeta').textContent='Session notice could not be cleared automatically.';
+      status('Kick notice could not be cleared: '+e.message);
+    }
+  },e=>status('Could not check session status: '+e.message)));
+}
+function closeActionMenus(){$$('.action-menu.open').forEach(x=>x.classList.remove('open'));$$('[data-menu-toggle][aria-expanded=true]').forEach(x=>x.setAttribute('aria-expanded','false'));$$('.cmt.menu-active').forEach(x=>x.classList.remove('menu-active'))}
+let reportsUnsub=null;
+function openReports(){
+  if(!S.isAdmin)return toast('Admin access required.');
+  open('#reportsM');const list=$('#reportsList');list.innerHTML='<p class="none">Loading reports…</p>';
+  if(reportsUnsub)reportsUnsub();
+  reportsUnsub=S.db.collection('reports').orderBy('at','desc').limit(100).onSnapshot(s=>{
+    list.innerHTML=s.empty?'<p class="none">No reports right now ✨</p>':s.docs.map(d=>{const r=d.data();return `<div class="card report-card"><div class="report-top"><b>${esc((r.kind||'content').toUpperCase())} report</b><small>${ago(r.at)}</small></div>${r.snippet?`<p class="report-snippet">“${esc(r.snippet)}”</p>`:''}<p class="report-reason">${esc(r.reason||'No reason supplied')}</p><p class="hint">Reported by @${esc(r.by||'unknown')} · Target @${esc(r.targetUser||'unknown')}</p>${r.targetUser?`<button class="btn soft sm" data-report-ban="${esc(r.targetUser)}">Ban @${esc(r.targetUser)}</button>`:''}${r.kind==='message'&&r.chatId?`<button class="btn soft sm" data-report-delete-message="${esc(r.targetId)}" data-chat="${esc(r.chatId)}">Remove message</button>`:''}<button class="btn soft sm" data-dismiss-report="${esc(d.id)}">Dismiss report</button></div>`}).join('');
+  },e=>{list.innerHTML=`<p class="err">${esc(e.message)}</p>`});
+}
+$('#reportsBtn').onclick=()=>{menu.classList.remove('open');openReports()};
+$('#reportsList').addEventListener('click',async e=>{const ban=e.target.closest('[data-report-ban]');if(ban){openActionModal('ban',{user:ban.dataset.reportBan});return}const del=e.target.closest('[data-report-delete-message]');if(del){openActionModal('delete-content',{kind:'message',id:del.dataset.reportDeleteMessage,chatId:del.dataset.chat});return}const b=e.target.closest('[data-dismiss-report]');if(!b)return;try{await S.db.doc('reports/'+b.dataset.dismissReport).delete();toast('Report dismissed.')}catch(x){toast('Could not dismiss: '+x.message)}});
+function actionMenu(kind,id,targetUser){
+  const target=esc(targetUser||''),admin=S.isAdmin;
+  let html=`<div class="more-wrap"><button class="dots-btn" type="button" data-menu-toggle aria-label="More options" aria-expanded="false">⋯</button><div class="action-menu">`+
+    `<button type="button" data-act="report" data-kind="${kind}" data-id="${esc(id)}" data-user="${target}">⚑ Report ${kind}</button>`;
+  if(targetUser&&targetUser!==S.me?.user)html+=`<button type="button" data-act="message" data-user="${target}">✉ Message @${target}</button>`;
+  if(admin){
+    html+=`<div class="menu-label">Admin tools</div>`;
+    if(kind==='poll'||kind==='comment')html+=`<button type="button" class="danger" data-act="delete-content" data-kind="${kind}" data-id="${esc(id)}" data-user="${target}">⌫ Delete ${kind}</button>`;
+    if(targetUser&&targetUser!==S.me?.user){
+      const targetUid=(S.accounts[targetUser]||{}).uid;
+      if(targetUid&&S.bans[targetUid]&&(!S.bans[targetUid].expiresAt||S.bans[targetUid].expiresAt>Date.now()))html+=`<button type="button" data-act="unban" data-user="${target}">✓ Unban @${target}</button>`;
+      else html+=`<button type="button" data-act="ban" data-user="${target}">⛔ Ban @${target}</button>`;
+      html+=`<button type="button" data-act="kick" data-user="${target}">↗ Kick @${target}</button>`;
+      html+=`<button type="button" class="danger" data-act="delete-account" data-user="${target}">⌫ Delete account</button>`;
+      html+=isAdminUser(targetUser)?`<button type="button" data-act="remove-admin" data-user="${target}">☆ Remove admin</button>`:`<button type="button" data-act="make-admin" data-user="${target}">✦ Make @${target} admin</button>`;
+    }
+    html+=`<button type="button" data-act="add-admin">＋ Add admin…</button>`;
+  }
+  return html+'</div></div>';
+}
+function openActionModal(mode,meta={}){
+  S.pendingAction={mode,...meta};
+  const specs={
+    report:['Report '+meta.kind,'Your report will be sent to the voter.gg moderation queue.','Send report'],
+    ban:['Ban account','The user stays signed in but sees a full-screen banned notice. Access returns when the ban expires or an admin removes it. Choose a duration and reason.','Ban account'],
+    kick:['Kick account','The user will see a full-screen kicked notice. Their account stays intact, and they can choose to log back in.','Kick user'],
+    'delete-content':['Delete '+meta.kind,'This removes the selected '+meta.kind+' from voter.gg. This cannot be undone.','Delete '+meta.kind],
+    'delete-account':['Delete account','This permanently removes the account and its voter.gg posts, comments and votes.','Delete account'],
+    'make-admin':['Make admin','This account will receive admin privileges and the animated gold checkmark.','Make admin'],
+    'remove-admin':['Remove admin','This account will lose admin privileges and its gold checkmark.','Remove admin'],
+    'add-admin':['Add an admin','Enter the username of an existing voter.gg account.','Add admin'],
+    unban:['Unban account','This removes the active ban for this account.','Unban account']
+  };
+  const spec=specs[mode]||['Moderation','Confirm this action.','Continue'];
+  $('#actionTitle').textContent=spec[0];$('#actionDesc').textContent=spec[1];$('#actionGo').textContent=spec[2];$('#actionErr').textContent='';
+  const showUser=['add-admin'].includes(mode),showReason=['report','ban'].includes(mode),showDuration=mode==='ban';
+  $('#actionUsername').hidden=!showUser;$('#actionReason').hidden=!showReason;$('#actionDuration').hidden=!showDuration;
+  $('#actionUsername').value=mode==='add-admin'?'':(meta.user||'');$('#actionReason').value='';
+  open('#actionM');if(showUser)setTimeout(()=>$('#actionUsername').focus(),220);
+}
+async function accountFor(username){
+  const key=String(username||'').trim().toLowerCase();if(!/^[a-z0-9_]{3,20}$/.test(key))throw new Error('Enter a valid username (3–20 letters, numbers or underscores).');
+  let a=S.accounts[key];if(!a){const snap=await S.db.doc('accounts/'+key).get();if(!snap.exists)throw new Error('No account named @'+key+' exists.');a=snap.data();S.accounts[key]=a;}
+  if(!a.uid)throw new Error('That account is missing its Firebase user ID.');return {username:key,account:a,uid:a.uid};
+}
+async function executeAction(){
+  const pending=S.pendingAction;if(!pending)return;const mode=pending.mode,btn=$('#actionGo'),err=$('#actionErr');
+  const reason=$('#actionReason').value.trim();btn.disabled=true;err.textContent='';
+  try{
+    if(!S.me)throw new Error('Log in first.');
+    if(mode==='report'){
+      if(reason.length<4)throw new Error('Please add a short reason for the report.');
+      await S.db.collection('reports').add({kind:pending.kind,targetId:pending.id,targetUser:pending.user||'',chatId:pending.chatId||'',snippet:String(pending.snippet||'').slice(0,180),by:S.me.user,byUid:S.me.uid,reason,at:Date.now(),status:'open'});
+      toast('Report sent. Thank you.');
+    }else{
+      if(!S.isAdmin)throw new Error('Admin access is required.');
+      if(mode==='delete-content'){if(pending.kind==='message')await S.db.doc('conversations/'+pending.chatId+'/messages/'+pending.id).delete();else await S.db.doc((pending.kind==='poll'?'polls/':'comments/')+pending.id).delete();toast(pending.kind[0].toUpperCase()+pending.kind.slice(1)+' deleted.');}
+      else if(mode==='make-admin'||mode==='remove-admin'||mode==='ban'||mode==='kick'||mode==='delete-account'||mode==='unban'||mode==='add-admin'){
+        const username=(mode==='add-admin'?$('#actionUsername').value:pending.user||'').trim().toLowerCase();
+        const target=await accountFor(username);
+        if(target.uid===S.me.uid&&['ban','kick','delete-account','remove-admin'].includes(mode))throw new Error('You cannot use this action on your own account.');
+        if(mode==='make-admin'){const batch=S.db.batch();batch.set(S.db.doc('admins/'+target.uid),{uid:target.uid,username:target.username,role:'admin',made:Date.now(),madeBy:S.me.uid});batch.set(S.db.doc('accounts/'+target.username),{isAdmin:true},{merge:true});await batch.commit();toast('@'+target.username+' is now an admin ✨');}
+        if(mode==='remove-admin'){const batch=S.db.batch();batch.delete(S.db.doc('admins/'+target.uid));batch.set(S.db.doc('accounts/'+target.username),{isAdmin:false},{merge:true});await batch.commit();toast('Admin access removed.');}
+        if(mode==='ban'){if(reason.length<4)throw new Error('Please add a reason for the ban.');const duration=Number($('#actionDuration').value);await S.db.doc('bans/'+target.uid).set({uid:target.uid,username:target.username,reason,at:Date.now(),by:S.me.uid,expiresAt:duration?Date.now()+duration:0});toast('@'+target.username+' has been banned.');}
+        if(mode==='kick'){await S.db.doc('kicks/'+target.uid).set({uid:target.uid,username:target.username,at:Date.now(),by:S.me.uid});toast('@'+target.username+' will be signed out.');}
+        if(mode==='delete-account'){if(!S.functions)throw new Error('The account-deletion service is not connected. Deploy the included Cloud Function first.');const fn=S.functions.httpsCallable('adminDeleteAccount');await fn({username:target.username});toast('@'+target.username+' account deleted.');}
+        if(mode==='unban'){await S.db.doc('bans/'+target.uid).delete();toast('@'+target.username+' has been unbanned.');}
+        if(mode==='add-admin'){const batch=S.db.batch();batch.set(S.db.doc('admins/'+target.uid),{uid:target.uid,username:target.username,role:'admin',made:Date.now(),madeBy:S.me.uid});batch.set(S.db.doc('accounts/'+target.username),{isAdmin:true},{merge:true});await batch.commit();toast('@'+target.username+' is now an admin ✨');}
+      }
+    }
+    closeM($('#actionM'));closeActionMenus();if($('#adminPanelM').classList.contains('open'))renderAdminPanel();
+  }catch(e){err.textContent=e.message||'That action failed.'}
+  finally{btn.disabled=false}
+}
+$('#actionGo').onclick=executeAction;
+
+function login(u,uid){S.me={user:u,uid:uid||((S.accounts[u]||{}).uid)};S.isAdmin=!!(S.me.uid&&S.admins[S.me.uid]);LS.set(u);renderMe();renderFeed()}
+function setMode(m){
+  S.mode=m;
+  $$('#amode button').forEach(b=>b.classList.toggle('on',b.dataset.v===m));
+  placeMode();
+  const up=m==='up';
+  $('#aName').hidden=!up;$('#aPicL').hidden=!up;
+  $('#aGo').textContent=up?'Create account':'Log in';
+  $('#aTitle').textContent=up?'Join voter.gg':'Welcome back';
+  $('#aErr').textContent='';
+}
+function openAuth(m='in'){setMode(m);$('#aPass').value='';$('#aErr').textContent='';open('#authM');setTimeout(()=>$('#aUser').focus(),250)}
+$('#loginBtn').onclick=()=>openAuth('in');
+$('#aPic').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{S.pic=await toData(f,160,.82);$('#aPicL').classList.add('ok');$('#aPicT').textContent='✓ Picture ready'}catch(x){$('#aErr').textContent=x.message}};
+async function auth(){
+  const err=m=>$('#aErr').textContent=m,btn=$('#aGo');
+  if(!S.db||!S.auth)return err('Firebase is not configured yet. Follow SETUP.md.');
+  const u=$('#aUser').value.trim().toLowerCase(),p=$('#aPass').value;
+  if(!/^[a-z0-9_]{3,20}$/.test(u))return err('Username: 3–20 letters, numbers or _');
+  if(p.length<6)return err('Password needs 6+ characters');
+  btn.disabled=true;
+  const email=u+'@voter.gg';
+  try{
+    const ref=S.db.doc('accounts/'+u),snap=await ref.get();
+    if(S.mode==='up'){
+      if(snap.exists)throw new Error('That username is taken');
+      const name=$('#aName').value.trim()||u;
+      const cred=await S.auth.createUserWithEmailAndPassword(email,p);
+      await ref.set({user:u,name,avatar:S.pic||defaultAvatar(u),uid:cred.user.uid,made:Date.now()});
+      S.accounts[u]={user:u,name,avatar:S.pic||defaultAvatar(u),uid:cred.user.uid};
+      login(u,cred.user.uid);toast('Welcome, '+name+' 🎉');
+    }else{
+      if(!snap.exists)throw new Error('No account with that name');
+      const a=snap.data();
+      const cred=await S.auth.signInWithEmailAndPassword(email,p);
+      if(a.uid!==cred.user.uid){await S.auth.signOut();throw new Error('Account verification failed.')}
+      S.accounts[u]=a;login(u,cred.user.uid);toast('Welcome back, '+(a.name||u)+' ✨');
+    }
+    closeM($('#authM'));
+  }catch(e){
+    const code=e.code||'';
+    if(code==='auth/email-already-in-use')err('That username is already taken');
+    else if(code==='auth/invalid-credential'||code==='auth/wrong-password'||code==='auth/user-not-found')err('Incorrect username or password');
+    else if(code==='auth/too-many-requests')err('Too many attempts. Try again later.');
+    else err(e.message||'Something went wrong');
+  }finally{btn.disabled=false}
+}
+$('#aGo').onclick=auth;
+$('#accountScreenPrimary').onclick=async()=>{
+  const current=S.accountScreen;if(!current)return;
+  if(current.kind==='banned'){
+    const user=S.auth?.currentUser;if(!user)return;
+    try{
+      const snap=await S.db.doc('bans/'+user.uid).get();
+      if(!snap.exists){hideAccountScreen();renderMe();renderFeed();toast('Your ban has been lifted. Welcome back ✨');return}
+      const b=snap.data()||{},expires=Number(b.expiresAt||0);
+      if(expires&&expires<=Date.now()){hideAccountScreen();renderMe();renderFeed();toast('Your ban has expired. Welcome back ✨');}
+      else{showAccountScreen('banned',b);scheduleBanExpiry(b)}
+    }catch(e){$('#accountScreenMeta').textContent='Could not check right now: '+e.message}
+    return;
+  }
+  try{
+    const user=S.auth?.currentUser;
+    if(user){
+      try{await S.db.doc('kicks/'+user.uid).delete()}
+      catch(e){$('#accountScreenMeta').textContent='Could not clear the kick notice: '+e.message+' · Please try again or contact an admin.';return}
+      await S.auth.signOut();
+    }
+  }catch(e){$('#accountScreenMeta').textContent='Could not finish signing out: '+e.message;return}
+  hideAccountScreen({clearExit:true});S.kickHandling=false;openAuth('in');
+};
+
+$('#aPass').addEventListener('keydown',e=>{if(e.key==='Enter')auth()});
+
+const menu=$('#menu');
+$('#avBtn').onclick=e=>{e.stopPropagation();menu.classList.toggle('open')};
+document.addEventListener('click',e=>{if(!e.target.closest('#acct'))menu.classList.remove('open');if(!e.target.closest('.more-wrap'))closeActionMenus()});
+$('#logout').onclick=async()=>{menu.classList.remove('open');try{await S.auth.signOut()}catch(e){toast('Could not log out: '+e.message)}};
+$('#pPic').onchange=async e=>{
+  const f=e.target.files[0];menu.classList.remove('open');
+  if(!f||!S.me)return;
+  try{
+    const avatarData=await toData(f,160,.82);
+    await S.db.doc('accounts/'+S.me.user).update({avatar:avatarData});
+    S.accounts[S.me.user]={...S.accounts[S.me.user],avatar:avatarData};
+    renderMe();renderFeed();toast('Profile picture updated ✨')
+  }
+  catch(x){toast(x.message)}
+  finally{e.target.value=''}
+};
+$$('[data-close]').forEach(b=>b.onclick=()=>{const modal=b.closest('.modal');if(modal?.id==='dmM')releaseDMThread();closeM(modal)});
+$$('.modal').forEach(m=>m.addEventListener('mousedown',e=>{if(e.target===m){if(m.id==='dmM')releaseDMThread();closeM(m)}}));
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){$$('.modal.open').forEach(m=>{if(m.id==='dmM')releaseDMThread();closeM(m)});menu.classList.remove('open')}});
+
+// ---- composer ----
+function addOpt(){const box=$('#nOpts');if(box.children.length>=4)return;const i=document.createElement('input');i.placeholder='Option '+(box.children.length+1);i.maxLength=40;i.dir='auto';i.setAttribute('aria-label','Option '+(box.children.length+1));box.appendChild(i)}
+function checkPost(){const ok=$('#nQ').value.trim()&&$$('#nOpts input').filter(i=>i.value.trim()).length>=2;$('#nGo').disabled=!ok}
+function openNew(){
+  if(!S.me)return openAuth('in');
+  $('#nQ').value='';$('#nOpts').innerHTML='';addOpt();addOpt();
+  S.nImg=S.nAud='';
+  $('#nImgL').classList.remove('ok');$('#nAudL').classList.remove('ok');
+  $('#nImgL span').textContent='🖼️ Picture';$('#nAudL span').textContent='🎵 Audio clip';
+  $('#nErr').textContent='';checkPost();open('#newM');setTimeout(()=>$('#nQ').focus(),250);
+}
+const ask=$('#ask');
+ask.onclick=openNew;
+ask.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openNew()}};
+$('#nAdd').onclick=addOpt;
+$('#newM').addEventListener('input',checkPost);
+$('#nImg').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{S.nImg=await toData(f,560,.7);$('#nImgL').classList.add('ok');$('#nImgL span').textContent='✓ Picture added';$('#nErr').textContent=''}catch(x){$('#nErr').textContent=x.message}};
+$('#nAud').onchange=async e=>{
+  const f=e.target.files[0];if(!f)return;
+  if(f.size>90000){$('#nErr').textContent='Audio must be under 90 KB.';e.target.value='';return}
+  try{S.nAud=await readData(f);$('#nAudL').classList.add('ok');$('#nAudL span').textContent='✓ '+f.name.slice(0,16);$('#nErr').textContent=''}
+  catch(x){$('#nErr').textContent=x.message}
+};
+$('#nGo').onclick=async()=>{
+  const btn=$('#nGo'),q=$('#nQ').value.trim(),opts=$$('#nOpts input').map(i=>i.value.trim()).filter(Boolean).slice(0,4);
+  btn.textContent='Posting…';btn.disabled=true;
+  try{await S.db.collection('polls').add({q,opts,img:S.nImg,aud:S.nAud,by:S.me.user,at:Date.now()});closeM($('#newM'));toast('Poll posted 🚀')}
+  catch(x){$('#nErr').textContent=x.message||'Could not post poll'}
+  finally{btn.textContent='Post poll';checkPost()}
+};
+
+// ---- feed ----
+function wirePlayer(a){
+  const pl=a.parentElement,btn=pl.querySelector('.play'),fill=pl.querySelector('.fill'),tm=pl.querySelector('.time'),tr=pl.querySelector('.track');
+  btn.onclick=()=>{if(a.paused)a.play().catch(()=>toast('Could not play this clip'));else a.pause()};
+  a.onplay=()=>{btn.textContent='❚❚';document.querySelectorAll('audio').forEach(x=>{if(x!==a)x.pause()})};
+  a.onpause=()=>{btn.textContent='▶'};
+  a.onended=()=>{btn.textContent='▶';fill.style.width='0%';tm.textContent=dur(a.duration)};
+  a.ontimeupdate=()=>{fill.style.width=(a.duration?a.currentTime/a.duration*100:0)+'%';tm.textContent=dur(a.currentTime)};
+  a.onloadedmetadata=()=>{tm.textContent=dur(a.duration)};
+  tr.onclick=e=>{if(!a.duration||!isFinite(a.duration))return;const r=tr.getBoundingClientRect();a.currentTime=Math.min(1,Math.max(0,(e.clientX-r.left)/r.width))*a.duration};
+}
+function mkCard(p){
+  const el=document.createElement('article');
+  el.className='card poll';el.dataset.id=p.id;el.dataset.st='';
+  const img=okImg(p.img),aud=okAud(p.aud);
+  el.innerHTML=
+  `<div class="ph-head"><span class="av" data-av></span><div class="who"><b data-nm></b><small data-meta></small></div><div data-poll-menu></div></div>
+  <h2 class="q" dir="auto">${esc(p.q)}</h2>
+  ${img?`<img class="img" src="${esc(img)}" alt="">`:''}
+  ${aud?`<div class="player"><button class="play" aria-label="Play clip">▶</button><div class="track"><i class="fill"></i></div><span class="time">0:00</span><audio preload="metadata" src="${esc(aud)}"></audio></div>`:''}
+  <div class="opts">${(p.opts||[]).map((o,i)=>`<button class="opt" data-i="${i}"><i class="fill"></i><span class="t" dir="auto">${esc(o)}</span><span class="rt"><span class="tick">✓</span><b class="pc"></b></span></button>`).join('')}</div>
+  <div class="foot"><span data-tot></span><button class="chip" data-cm aria-expanded="false">💬 Comments <span data-cc>0</span></button></div>
+  <div class="cm"><div><div class="cm-in"><div data-list></div><div class="stks">${ST.map(s=>`<button class="stk" data-s="${s}" aria-label="Sticker ${s}">${s}</button>`).join('')}</div><div class="cin"><input data-ci dir="auto" maxlength="200" placeholder="Add a comment…" aria-label="Comment"><button class="btn grad sm" data-send>Send</button></div></div></div></div>`;
+  const a=el.querySelector('audio');if(a)wirePlayer(a);
+  return el;
+}
+function paintCard(id){
+  const el=S.cards.get(id),p=S.polls.find(x=>x.id===id);if(!el||!p)return;
+  const v=S.votes[id]||{},n=p.opts.map(()=>0);
+  Object.values(v).forEach(o=>{if(n[o]!=null)n[o]++});
+  const tot=n.reduce((a,b)=>a+b,0),mine=S.me?v[S.me.user]:undefined,show=mine!==undefined;
+  const a=S.accounts[p.by]||{};
+  setAv(el.querySelector('[data-av]'),p.by);
+  el.querySelector('[data-nm]').innerHTML=esc(a.name||p.by)+(isAdminUser(p.by)?adminBadge():'');
+  el.querySelector('[data-poll-menu]').innerHTML=actionMenu('poll',id,p.by);
+  el.querySelector('[data-meta]').textContent='@'+p.by+' · '+ago(p.at);
+  el.classList.toggle('voted',show);
+  el.querySelectorAll('.opt').forEach(b=>{
+    const i=+b.dataset.i,pct=tot?Math.round(n[i]/tot*100):0;
+    b.querySelector('.fill').style.width=(show?pct:0)+'%';
+    b.querySelector('.pc').textContent=show?pct+'%':'';
+    b.classList.toggle('mine',mine===i);
+  });
+  el.querySelector('[data-tot]').textContent=tot+(tot===1?' vote':' votes');
+  const cs=S.comments[id]||[];
+  el.querySelector('[data-cc]').textContent=cs.length;
+  const key=cs.map(c=>{const ca=S.accounts[c.u]||{},ban=ca.uid&&S.bans[ca.uid];return c.id+'~'+(ca.name||'')+'~'+(ca.avatar||'').length+'~'+isAdminUser(c.u)+'~'+!!(ban&&(!ban.expiresAt||ban.expiresAt>Date.now()))+'~'+(c.t||'')+'~'+(c.s||'')}).join()+'|admin:'+S.isAdmin;
+  if(el.ck!==key){
+    el.ck=key;
+    el.querySelector('[data-list]').innerHTML=cs.length?cs.map(c=>{const ca=S.accounts[c.u]||{};return `<div class="cmt"><span class="av sm">${avatar(c.u)}</span><div class="bub"><b>${esc(ca.name||c.u)}${isAdminUser(c.u)?adminBadge():''}</b>${c.t?`<span class="comment-text" dir="auto">${esc(c.t)}</span>`:''}${c.s?`<span class="big-st">${esc(c.s)}</span>`:''}</div>${actionMenu('comment',c.id,c.u)}</div>`}).join(''):'<p class="none">No comments yet. Be the first ✦</p>';
+  }
+}
+function renderFeed(){
+  const feed=$('#feed');
+  const list=[...S.polls].sort(S.tab==='hot'?(a,b)=>total(b.id)-total(a.id)||b.at-a.at:(a,b)=>b.at-a.at);
+  const ids=new Set(list.map(p=>p.id));
+  for(const[id,el] of S.cards)if(!ids.has(id)){el.remove();S.cards.delete(id)}
+  list.forEach((p,i)=>{
+    let el=S.cards.get(p.id);
+    if(!el){
+      el=mkCard(p);el.classList.add('enter');
+      el.addEventListener('animationend',()=>el.classList.remove('enter'),{once:true});
+      S.cards.set(p.id,el);
+    }
+    if(feed.children[i]!==el)feed.insertBefore(el,feed.children[i]||null);
+    paintCard(p.id);
+  });
+  $('#skel').hidden=S.loaded||!S.db;
+  $('#empty').hidden=!(S.loaded&&!list.length);
+}
+async function vote(id,i){
+  if(!S.me)return openAuth('in');
+  const v=S.votes[id]=S.votes[id]||{};
+  if(v[S.me.user]===i)return;
+  v[S.me.user]=i;paintCard(id);
+  try{await S.db.doc('votes/'+id+'_'+S.me.user).set({p:id,u:S.me.user,o:i,at:Date.now()})}
+  catch(e){toast('Vote failed: '+(e.message||'try again'))}
+}
+async function sendComment(card){
+  if(!S.me)return openAuth('in');
+  const inp=card.querySelector('[data-ci]'),t=inp.value.trim(),s=card.dataset.st;
+  if(!t&&!s)return toast('Type something or pick a sticker');
+  inp.value='';
+  try{
+    await S.db.collection('comments').add({p:card.dataset.id,u:S.me.user,t,s,at:Date.now()});
+    card.dataset.st='';card.querySelectorAll('.stk').forEach(b=>b.classList.remove('on'));
+  }catch(e){inp.value=t;toast('Could not send: '+(e.message||'try again'))}
+}
+$('#feed').addEventListener('click',e=>{
+  const toggle=e.target.closest('[data-menu-toggle]');
+  if(toggle){e.stopPropagation();const box=toggle.nextElementSibling,was=box.classList.contains('open');closeActionMenus();if(!was){box.classList.add('open');toggle.setAttribute('aria-expanded','true');toggle.closest('.cmt')?.classList.add('menu-active')}return}
+  const action=e.target.closest('[data-act]');
+  if(action){e.stopPropagation();const {act,kind,id,user}=action.dataset;closeActionMenus();if(act==='report')openActionModal('report',{kind,id,user});else if(act==='delete-content')openActionModal('delete-content',{kind,id,user});else if(act==='add-admin')openActionModal('add-admin');else if(['ban','kick','delete-account','make-admin','remove-admin','unban'].includes(act))openActionModal(act,{user});return}
+  const card=e.target.closest('.card');if(!card)return;
+  const opt=e.target.closest('.opt');if(opt)return vote(card.dataset.id,+opt.dataset.i);
+  const chip=e.target.closest('[data-cm]');
+  if(chip){
+    const cm=card.querySelector('.cm'),isOpen=cm.classList.toggle('open');
+    chip.setAttribute('aria-expanded',isOpen);
+    if(isOpen)setTimeout(()=>card.querySelector('[data-ci]').focus({preventScroll:true}),400);
+    return;
+  }
+  const st=e.target.closest('.stk');
+  if(st){card.dataset.st=card.dataset.st===st.dataset.s?'':st.dataset.s;card.querySelectorAll('.stk').forEach(b=>b.classList.toggle('on',b.dataset.s===card.dataset.st));return}
+  if(e.target.closest('[data-send]'))sendComment(card);
+});
+$('#feed').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('[data-ci]'))sendComment(e.target.closest('.card'))});
+
+// ---- shared data (artifact db capability) ----
+function start(){
+  const db=S.db;
+  db.collection('accounts').limit(500).onSnapshot(s=>{
+    S.accounts={};s.docs.forEach(d=>{S.accounts[d.id]=d.data()});
+    S.booted=true;
+    renderMe();renderFeed();if($('#adminPanelM')?.classList.contains('open'))renderAdminPanel();
+  },e=>status(e.message));
+  db.collection('polls').orderBy('at','desc').limit(100).onSnapshot(s=>{
+    S.polls=s.docs.map(d=>({id:d.id,...d.data()}));S.loaded=true;renderFeed();
+  },e=>status(e.message));
+  db.collection('votes').limit(3000).onSnapshot(s=>{
+    S.votes={};s.docs.forEach(d=>{const v=d.data();(S.votes[v.p]=S.votes[v.p]||{})[v.u]=v.o});
+    S.polls.forEach(p=>paintCard(p.id));
+  },()=>{});
+  db.collection('comments').orderBy('at','asc').limit(1000).onSnapshot(s=>{
+    S.comments={};s.docs.forEach(d=>{const c={id:d.id,...d.data()};(S.comments[c.p]=S.comments[c.p]||[]).push(c)});
+    S.polls.forEach(p=>paintCard(p.id));
+  },()=>{});
+}
+
+// ---- Admin dashboard ----
+function activeBan(uid){const b=S.bans[uid];return !!(b&&(!b.expiresAt||b.expiresAt===0||b.expiresAt>Date.now()))}
+function openAdminPanel(){if(!S.isAdmin)return toast('Admin access required.');$('#adminSearch').value='';S.adminTab='users';$$('[data-admin-tab]').forEach(b=>b.classList.toggle('on',b.dataset.adminTab==='users'));renderAdminPanel();open('#adminPanelM')}
+function renderAdminPanel(){
+  if(!S.isAdmin||!$('#adminList'))return;
+  const accounts=Object.entries(S.accounts),admins=accounts.filter(([u,a])=>a.isAdmin===true).length,bans=Object.keys(S.bans).filter(activeBan).length;
+  $('#adminStats').innerHTML=`<div class="admin-stat"><b>${accounts.length}</b><span>Members loaded</span></div><div class="admin-stat"><b>${bans}</b><span>Active bans</span></div><div class="admin-stat"><b>${admins}</b><span>Admins</span></div>`;
+  const q=($('#adminSearch').value||'').trim().toLowerCase();let rows=accounts.filter(([u,a])=>(u+' '+(a.name||'')).toLowerCase().includes(q));
+  if(S.adminTab==='bans')rows=rows.filter(([u,a])=>a.uid&&activeBan(a.uid));
+  rows.sort((a,b)=>(b[1].made||0)-(a[1].made||0));
+  if(!rows.length){$('#adminList').innerHTML=`<div class="admin-state"><span class="state-orb">${S.adminTab==='bans'?'✓':'✦'}</span><b>${S.adminTab==='bans'?'No active bans':'No matching members'}</b><small>${S.adminTab==='bans'?'Everyone is currently able to use voter.gg.':'Try another search or invite a new admin.'}</small></div>`;return}
+  $('#adminList').innerHTML=rows.slice(0,100).map(([u,a])=>{const uid=a.uid||'',b=uid&&S.bans[uid],isBanned=uid&&activeBan(uid),self=uid===S.me?.uid;return `<div class="admin-user-row"><span class="av">${avatar(u)}</span><div class="admin-user-info"><b>${esc(a.name||u)}${a.isAdmin?adminBadge():''}${isBanned?'<span class="banned-tag">BANNED</span>':''}</b><small>@${esc(u)}${self?' · you':''}</small></div><div class="admin-user-actions">${S.adminTab==='bans'?`<button class="mini-action" data-admin-do="unban" data-user="${esc(u)}">Unban</button>`:`${!self?`<button class="mini-action" data-admin-do="${isBanned?'unban':'ban'}" data-user="${esc(u)}">${isBanned?'Unban':'Ban'}</button><button class="mini-action" data-admin-do="kick" data-user="${esc(u)}">Kick</button>`:''}<button class="mini-action" data-admin-do="${a.isAdmin?'remove-admin':'make-admin'}" data-user="${esc(u)}">${a.isAdmin?'Remove admin':'Make admin'}</button>${!self?`<button class="mini-action danger" data-admin-do="delete-account" data-user="${esc(u)}">Delete</button>`:''}`}</div></div>`}).join('');
+}
+$('#adminPanelBtn').onclick=()=>{menu.classList.remove('open');openAdminPanel()};
+$('#adminAddBtn').onclick=()=>openActionModal('add-admin');
+$('#adminReportsBtn').onclick=()=>{closeM($('#adminPanelM'));openReports()};
+$('#adminSearch').addEventListener('input',renderAdminPanel);
+$$('[data-admin-tab]').forEach(b=>b.addEventListener('click',()=>{S.adminTab=b.dataset.adminTab;$$('[data-admin-tab]').forEach(x=>x.classList.toggle('on',x===b));$('#adminSearch').placeholder=S.adminTab==='bans'?'Search banned accounts…':'Search username or display name…';renderAdminPanel()}));
+$('#adminList').addEventListener('click',e=>{const b=e.target.closest('[data-admin-do]');if(!b)return;const mode=b.dataset.adminDo,user=b.dataset.user;if(mode==='ban'||mode==='kick'||mode==='delete-account'||mode==='make-admin'||mode==='remove-admin'||mode==='unban')openActionModal(mode,{user})});
+
+// ---- Direct messages ----
+let chatListUnsub=null,chatMessagesUnsub=null,activeChatUnsub=null,chatListErr='';
+function releaseDMThread(){if(chatMessagesUnsub){chatMessagesUnsub();chatMessagesUnsub=null}if(activeChatUnsub){activeChatUnsub();activeChatUnsub=null}S.currentChat=null;S.dmPeer=null;S.dmMessages=[];S.dmBlocked=false;if($('#dmThread'))$('#dmThread').hidden=true;if($('#dmWelcome'))$('#dmWelcome').hidden=false;$('#dmHeadMenu')?.classList.remove('open');if($('#dmList'))renderDMList()}
+function stopDMWatch(){if(chatListUnsub){chatListUnsub();chatListUnsub=null}releaseDMThread();S.chats={};}
+function chatIdFor(uidA,uidB){return [uidA,uidB].sort().join('_')}
+function otherMember(chat){return (chat.members||[]).find(uid=>uid!==S.me?.uid)||''}
+function otherUsername(chat){const uid=otherMember(chat),idx=(chat.members||[]).indexOf(uid);return (chat.users||[])[idx]||'member'}
+function isBlocked(uid){return !!S.dmBlocked||false}
+async function blockedEither(uid){const a=S.me.uid,b=uid;const [own,other]=await Promise.all([S.db.doc(`blocks/${a}_${b}`).get(),S.db.doc(`blocks/${b}_${a}`).get()]);return own.exists||other.exists}
+function watchDMs(){
+  if(chatListUnsub){chatListUnsub();chatListUnsub=null}if(!S.me||!S.me.uid||!S.db)return;
+  $('#dmList').innerHTML='<div class="admin-state"><span class="state-orb">✉</span><b>Loading inbox…</b><small>Your conversations will appear here</small></div>';
+  chatListUnsub=S.db.collection('conversations').where('members','array-contains',S.me.uid).limit(60).onSnapshot(s=>{S.chats={};s.docs.forEach(d=>S.chats[d.id]={id:d.id,...d.data()});renderDMList()},e=>{chatListErr=e.message;$('#dmList').innerHTML=`<div class="admin-state"><span class="state-orb">!</span><b>Inbox unavailable</b><small>${esc(e.message)}</small></div>`});
+}
+function renderDMList(){
+  const q=($('#dmSearch')?.value||'').toLowerCase().trim();const list=Object.values(S.chats).sort((a,b)=>(b.lastAt||b.createdAt||0)-(a.lastAt||a.createdAt||0)).filter(c=>(otherUsername(c)+' '+(S.accounts[otherUsername(c)]?.name||'')).toLowerCase().includes(q));
+  if(!list.length){$('#dmList').innerHTML='<div class="admin-state"><span class="state-orb">✉</span><b>No conversations yet</b><small>Start a message with someone you know.</small></div>';return}
+  $('#dmList').innerHTML=list.map(c=>{const u=otherUsername(c),a=S.accounts[u]||{},pending=c.status==='pending'&&c.requestedBy!==S.me.uid;return `<button class="dm-item ${S.currentChat===c.id?'active':''}" data-open-chat="${esc(c.id)}"><span class="av">${avatar(u)}</span><span class="dm-item-copy"><b>${esc(a.name||u)}${isAdminUser(u)?adminBadge():''}${pending?'<i class="dm-item-badge">REQUEST</i>':''}</b><span>${esc(c.lastMessage||'Start a conversation')}</span></span></button>`}).join('');
+}
+$('#dmSearch').addEventListener('input',renderDMList);
+function openDMs(username=''){
+  if(!S.me)return openAuth('in');open('#dmM');if(!chatListUnsub)watchDMs();
+  if(username)startDM(username).catch(e=>toast(e.message));
+}
+$('#messagesBtn').onclick=()=>openDMs();$('#dmStartFirst').onclick=()=>open('#newDmM');$('#newDmBtn').onclick=()=>{ $('#newDmUser').value='';$('#newDmErr').textContent='';open('#newDmM');setTimeout(()=>$('#newDmUser').focus(),180)};
+async function startDM(username){
+  const target=await accountFor(username);if(target.uid===S.me.uid)throw new Error('You cannot message yourself.');
+  if(await blockedEither(target.uid))throw new Error('This conversation is blocked.');
+  const id=chatIdFor(S.me.uid,target.uid),ref=S.db.doc('conversations/'+id),snap=await ref.get();
+  if(!snap.exists){const members=[S.me.uid,target.uid].sort(),users=members.map(uid=>uid===S.me.uid?S.me.user:target.username);await ref.set({members,users,status:'pending',requestedBy:S.me.uid,createdAt:Date.now(),lastAt:Date.now(),lastMessage:'',lastSender:S.me.uid});}
+  closeM($('#newDmM'));open('#dmM');if(!chatListUnsub)watchDMs();await openDMThread(id);
+}
+$('#newDmGo').onclick=async()=>{const b=$('#newDmGo');b.disabled=true;$('#newDmErr').textContent='';try{await startDM($('#newDmUser').value.trim().replace(/^@/,''))}catch(e){$('#newDmErr').textContent=e.message||'Could not start conversation.'}finally{b.disabled=false}};
+$('#newDmUser').addEventListener('keydown',e=>{if(e.key==='Enter')$('#newDmGo').click()});
+function applyDMChatState(chat){
+  const incoming=chat.status==='pending'&&chat.requestedBy!==S.me.uid;
+  const declined=chat.status==='declined';
+  const introAllowed=chat.status==='pending'&&chat.requestedBy===S.me.uid&&!chat.lastMessage;
+  const waiting=chat.status==='pending'&&chat.requestedBy===S.me.uid&&!!chat.lastMessage;
+  $('#dmRequest').hidden=!incoming || S.dmBlocked;
+  $('#dmWaiting').hidden=!waiting;
+  $('#dmComposer').hidden=!(chat.status==='accepted'||introAllowed) || S.dmBlocked || declined;
+  $('#dmBlockedNote').hidden=!(S.dmBlocked||declined);
+  if(declined)$('#dmBlockedNote').textContent='This message request was declined.';
+  else if(S.dmBlocked)$('#dmBlockedNote').textContent='You or this person blocked the conversation. Unblock to message again.';
+  else $('#dmBlockedNote').textContent='';
+}
+async function openDMThread(id){
+  let chat=S.chats[id];
+  if(!chat){const snap=await S.db.doc('conversations/'+id).get();chat=snap.exists?{id,...snap.data()}:null;}
+  if(!chat)return toast('Conversation not found.');
+  S.chats[id]=chat;S.currentChat=id;S.dmPeer=otherUsername(chat);
+  S.dmBlocked=await blockedEither(otherMember(chat));
+  $('#dmWelcome').hidden=true;$('#dmThread').hidden=false;
+  setAv($('#dmPeerAvatar'),S.dmPeer);const a=S.accounts[S.dmPeer]||{};
+  $('#dmPeerName').textContent=a.name||S.dmPeer;$('#dmPeerHandle').textContent='@'+S.dmPeer;
+  const ownBlock=await S.db.doc(`blocks/${S.me.uid}_${otherMember(chat)}`).get();
+  $('#dmBlockUser').textContent=ownBlock.exists?'↗ Unblock user':'⊘ Block user';
+  applyDMChatState(chat);
+  if(activeChatUnsub){activeChatUnsub();activeChatUnsub=null;}
+  if(chatMessagesUnsub){chatMessagesUnsub();chatMessagesUnsub=null;}
+  $('#dmMessages').innerHTML='<div class="admin-state"><span class="state-orb">✦</span><b>Loading messages…</b><small>Opening this conversation</small></div>';
+  activeChatUnsub=S.db.doc('conversations/'+id).onSnapshot(doc=>{
+    if(!doc.exists)return;
+    const next={id,...doc.data()};S.chats[id]=next;
+    if(S.currentChat===id)applyDMChatState(next);
+    renderDMList();
+  },e=>toast('Conversation update failed: '+e.message));
+  chatMessagesUnsub=S.db.collection('conversations/'+id+'/messages').orderBy('at','asc').limit(100).onSnapshot(s=>{S.dmMessages=s.docs.map(d=>({id:d.id,...d.data()}));renderDMMessages()},e=>{$('#dmMessages').innerHTML=`<div class="admin-state"><span class="state-orb">!</span><b>Could not load messages</b><small>${esc(e.message)}</small></div>`});
+  $('#dmList').querySelectorAll('.dm-item').forEach(b=>b.classList.toggle('active',b.dataset.openChat===id));$('#dmHeadMenu').classList.remove('open');
+}
+function renderDMMessages(){
+  const box=$('#dmMessages');if(!box)return;const wasBottom=box.scrollHeight-box.scrollTop-box.clientHeight<80;
+  if(!S.dmMessages.length){box.innerHTML='<div class="admin-state"><span class="state-orb">✉</span><b>No messages yet</b><small>Say hello to start the conversation.</small></div>';return}
+  box.innerHTML=S.dmMessages.map(m=>{const mine=m.fromUid===S.me?.uid;let body='';
+    if(m.type==='video')body='<span>This media message is no longer supported.</span>';
+    else if(m.type==='gif'){
+      const url=m.gifUrl||'';if(/^https:\/\/media\.tenor\.com\/.+\.gif(?:\?.*)?$/i.test(url))body=`<a href="${esc(url)}" target="_blank" rel="noopener noreferrer"><img class="dm-gif-preview" loading="lazy" src="${esc(url)}" alt="Tenor GIF"></a><small>Via Tenor</small>`;
+      else body=`<a class="dm-tenor-link" href="${esc(url)}" target="_blank" rel="noopener noreferrer"><span>GIF</span><span>View GIF on Tenor<small>Via Tenor · Opens in a new tab</small></span></a>`;
+    }else body=`<span>${esc(m.text||'')}</span>`;
+    return `<div class="dm-bubble-row ${mine?'mine':''}"><div class="dm-bubble">${body}<small>${ago(m.at||Date.now())}</small></div><div class="dm-msg-actions"><button title="Report message" data-report-message="${esc(m.id)}" data-user="${esc(m.fromUser||'')}">Report</button>${S.isAdmin?`<button title="Delete message" data-delete-message="${esc(m.id)}">Delete</button>`:''}</div></div>`;
+  }).join('');if(wasBottom)box.scrollTop=box.scrollHeight;
+}
+$('#dmList').addEventListener('click',e=>{const b=e.target.closest('[data-open-chat]');if(b)openDMThread(b.dataset.openChat).catch(x=>toast(x.message))});
+async function updateChatLast(ref,text){await ref.update({lastMessage:String(text||'').slice(0,90),lastAt:Date.now(),lastSender:S.me.uid})}
+let dmSending=false;
+async function sendDMText(){
+  const textValue=$('#dmText').value.trim();if(!textValue||!S.currentChat||S.dmBlocked||dmSending)return;
+  const chat=S.chats[S.currentChat]||((await S.db.doc('conversations/'+S.currentChat).get()).data()||{});
+  if(chat.status!=='accepted'&&!(chat.status==='pending'&&chat.requestedBy===S.me.uid&&!chat.lastMessage))return toast('Wait for the message request to be accepted.');
+  if(await blockedEither(otherMember(chat)))return toast('This conversation is blocked.');
+  const ref=S.db.doc('conversations/'+S.currentChat);$('#dmText').value='';dmSending=true;$('#dmSend').disabled=true;
+  try{await ref.collection('messages').add({fromUid:S.me.uid,fromUser:S.me.user,type:'text',text:textValue,at:Date.now()});await updateChatLast(ref,textValue);S.chats[S.currentChat]={...chat,lastMessage:textValue.slice(0,90),lastAt:Date.now(),lastSender:S.me.uid};if(chat.status==='pending'){$('#dmComposer').hidden=true;$('#dmMessages').innerHTML='<div class="admin-state"><span class="state-orb">✉</span><b>Request sent</b><small>You can chat after they accept your message request.</small></div>';}renderDMList()}catch(e){$('#dmText').value=textValue;toast('Message failed: '+e.message)}finally{dmSending=false;$('#dmSend').disabled=false}
+}
+$('#dmSend').onclick=sendDMText;$('#dmText').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendDMText()}});
+$('#dmAccept').onclick=async()=>{try{await S.db.doc('conversations/'+S.currentChat).update({status:'accepted',acceptedAt:Date.now()});S.chats[S.currentChat]={...S.chats[S.currentChat],status:'accepted'};applyDMChatState(S.chats[S.currentChat]);toast('Message request accepted ✨');}catch(e){toast('Could not accept request: '+e.message)}};
+$('#dmDecline').onclick=async()=>{try{await S.db.doc('conversations/'+S.currentChat).update({status:'declined',declinedAt:Date.now()});S.chats[S.currentChat]={...S.chats[S.currentChat],status:'declined'};applyDMChatState(S.chats[S.currentChat]);toast('Request declined.');}catch(e){toast('Could not decline request: '+e.message)}};
+$('#dmMoreBtn').onclick=e=>{e.stopPropagation();$('#dmHeadMenu').classList.toggle('open')};document.addEventListener('click',e=>{if(!e.target.closest('#dmMoreBtn')&&!e.target.closest('#dmHeadMenu'))$('#dmHeadMenu').classList.remove('open')});
+$('#dmBlockUser').onclick=async()=>{const peer=otherMember(S.chats[S.currentChat]||{});if(!peer)return;try{const ref=S.db.doc(`blocks/${S.me.uid}_${peer}`);if((await ref.get()).exists){await ref.delete();toast('User unblocked.')}else{await ref.set({byUid:S.me.uid,byUser:S.me.user,blockedUid:peer,blockedUser:S.dmPeer,at:Date.now()});toast('User blocked.')}$('#dmHeadMenu').classList.remove('open');await openDMThread(S.currentChat)}catch(e){toast('Could not update block: '+e.message)}};
+$('#dmReportConversation').onclick=()=>{const c=S.chats[S.currentChat]||{};openActionModal('report',{kind:'conversation',id:S.currentChat,user:S.dmPeer,chatId:S.currentChat,snippet:'Conversation with @'+S.dmPeer});$('#dmHeadMenu').classList.remove('open')};
+$('#dmMessages').addEventListener('click',e=>{const rb=e.target.closest('[data-report-message]');if(rb){const m=S.dmMessages.find(x=>x.id===rb.dataset.reportMessage);openActionModal('report',{kind:'message',id:rb.dataset.reportMessage,user:rb.dataset.user,chatId:S.currentChat,snippet:m?.text||m?.type||'Media message'});return}const del=e.target.closest('[data-delete-message]');if(del&&S.isAdmin){openActionModal('delete-content',{kind:'message',id:del.dataset.deleteMessage,chatId:S.currentChat})}});
+$('#dmGifBtn').onclick=()=>{$('#tenorSearch').value='';$('#tenorUrl').value='';$('#tenorErr').textContent='';open('#tenorM')};
+$('#tenorOpen').onclick=()=>{const q=$('#tenorSearch').value.trim();window.open('https://tenor.com/search/'+encodeURIComponent(q||'trending')+'-gifs','_blank','noopener,noreferrer')};
+function validTenorUrl(raw){try{const u=new URL(raw.trim());if(u.protocol!=='https:')return null;const host=u.hostname.toLowerCase();if(!['tenor.com','www.tenor.com','media.tenor.com'].includes(host))return null;if(host==='media.tenor.com'&&!/\.gif(?:$|\?)/i.test(u.pathname+u.search))return null;if(host!=='media.tenor.com'&&!u.pathname.startsWith('/view/'))return null;return u.href}catch{return null}}
+$('#tenorSend').onclick=async()=>{const url=validTenorUrl($('#tenorUrl').value);if(!url){$('#tenorErr').textContent='Paste a valid Tenor GIF share link or direct media.tenor.com GIF URL.';return}const chat=S.chats[S.currentChat]||{};if(chat.status!=='accepted'||S.dmBlocked){$('#tenorErr').textContent='This conversation must be accepted and unblocked before sharing GIFs.';return}try{await blockedEither(otherMember(chat)).then(x=>{if(x)throw new Error('This conversation is blocked.')});const ref=S.db.doc('conversations/'+S.currentChat);await ref.collection('messages').add({fromUid:S.me.uid,fromUser:S.me.user,type:'gif',gifUrl:url,at:Date.now()});await updateChatLast(ref,'GIF · Via Tenor');closeM($('#tenorM'));toast('GIF sent ✨')}catch(e){$('#tenorErr').textContent=e.message||'Could not send that GIF.'}};
+$('#dmSearch').addEventListener('keydown',e=>{if(e.key==='Escape')e.target.value='';renderDMList()});
+
+// Add a message action to the existing poll/comment action menu.
+const originalFeedClick=$('#feed').onclick;
+// The existing delegated handler remains in place; intercept message actions before it via an additional listener.
+$('#feed').addEventListener('click',e=>{const b=e.target.closest('[data-act="message"]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();closeActionMenus();openDMs(b.dataset.user)} ,true);
+
+
+// ---- Firebase / GitHub Pages bootstrap ----
+// Paste your Firebase web-app settings here (see SETUP.md).
+const firebaseConfig = {
+  apiKey: "AIzaSyDEIdyL-GUxbpiDd8rMfoz4uuvsIRU3_a0",
+  authDomain: "ebvc-2ddb2.firebaseapp.com",
+  projectId: "ebvc-2ddb2",
+  messagingSenderId: "640558089369",
+  appId: "1:640558089369:web:39e0346726877f5f47e408",
+  measurementId: "G-N5VR970FX1"
+};
+try{
+  if(firebaseConfig.apiKey.startsWith('PASTE_') || firebaseConfig.projectId.startsWith('PASTE_')){
+    status('Firebase setup needed — follow SETUP.md, then add your Firebase config to this file.');
+    $('#skel').hidden=true;
+  }else{
+    firebase.initializeApp(firebaseConfig);
+    S.auth=firebase.auth();
+    S.db=firebase.firestore();
+    S.functions=firebase.app().functions('us-central1');
+    const savedExit=readExitScreen();if(savedExit)showAccountScreen('kicked',savedExit);
+    start();
+    S.auth.onAuthStateChanged(async user=>{
+      if(!user){clearModerationWatch();stopAdminWatch();stopDMWatch();S.me=null;LS.set('');const exit=readExitScreen();if(exit){showAccountScreen('kicked',exit);return}if(S.accountScreen?.kind!=='banned')hideAccountScreen();renderMe();renderFeed();return}
+      try{
+        const snap=await S.db.collection('accounts').where('uid','==',user.uid).limit(1).get();
+        if(snap.empty){S.me=null;renderMe();renderFeed();return}
+        const doc=snap.docs[0];
+        S.accounts[doc.id]=doc.data();
+        S.me={user:doc.id,uid:user.uid};LS.set(doc.id);watchAdmins();watchModeration(user,doc.id);watchDMs();renderMe();renderFeed();
+      }catch(e){status('Could not load your account: '+e.message)}
+    });
+  }
+}catch(e){status('Firebase could not start: '+e.message);$('#skel').hidden=true}
+renderMe();
+</script>
+</body>
+</html>
